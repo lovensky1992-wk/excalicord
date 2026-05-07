@@ -135,19 +135,18 @@ idle ──[点击录制]──→ preview ──[点击开始]──→ countdo
 - **已去除**：Stripe（付费）、PostHog（埋点）
 
 ## 当前状态
-- **最后更新**：2026-05-07
-- **进展**：架构迁移到本地 Supabase 完成，localStorage mock（Layer 1+2）已回退，WebCodecs 重写（Layer 4）已回退
-- **未提交改动**：
-  - `useSlides.ts`：改比例同步更新所有 slide 的 frameDimensions + 直接写 localStorage
-  - `ExcalidrawCanvas.tsx`：`updateScene` 同步 frame 属性；手动 zoom-to-fit；viewport 推送
-  - `App.tsx`：录制时 HTML overlay 绿色边框；viewport 追踪
-  - `index.css`：移除错误的 focus-mode 隐藏工具栏 CSS
-- **待验证**：
-  1. 绿色边框 overlay 在实际浏览器中的效果
-  2. zoom-to-fit 聚焦效果
-  3. 取消录制后绿色边框消失
-  4. 改比例 → 创建 slide → 刷新 → 比例保持的完整流程
-  5. `recording-border-*` 元素清理（取消录制场景）
+- **最后更新**：2026-05-08
+- **进展**：Phase 0-7 全部完成，像素级 UI 对齐 + 视觉回归测试覆盖
+- **已提交**（3 个 commit 已推送到 GitHub fork）：
+  1. `1c24580` — 基础设施：Supabase Docker + Playwright + 环境 + 参考截图
+  2. `adbe393` — UI 像素级对齐：Phase 1-6 全状态组件
+  3. `e017c2c` — 视觉回归测试：16 个 golden 快照
+- **回归测试**：24 个 Playwright 测试全通过（16 回归 + 8 验证）
+- **验证覆盖**：
+  - 6 个 UI 状态：idle / settings / preview / recording / paused / stop
+  - 辅助功能：提词器 / 幻灯片 / 帮助面板 / 右键菜单
+  - 暗色主题：idle / settings / preview 不崩坏
+  - 5 种比例切换：16:9 / 4:3 / 3:4 / 9:16 / 1:1
 
 ## 当前改造分层
 
