@@ -8,7 +8,7 @@ const translations: Record<Locale, Record<string, string>> = {
   "zh-CN": zhCN,
 }
 
-let currentLocale: Locale = "en"
+let currentLocale: Locale = "zh-CN"
 
 export function setLocale(locale: Locale): void {
   currentLocale = locale

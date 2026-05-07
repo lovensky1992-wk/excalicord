@@ -1,0 +1,1841 @@
+{
+  "settingsPanel": {
+    "sections": [],
+    "sectionLabels": [],
+    "buttons": [],
+    "inputs": [],
+    "toggles": [],
+    "sliders": []
+  },
+  "settingsDOM": {
+    "tag": "div",
+    "cls": "settings-overlay",
+    "children": [
+      {
+        "tag": "div",
+        "cls": "settings-panel",
+        "children": [
+          {
+            "tag": "div",
+            "cls": "settings-preview-column",
+            "children": [
+              {
+                "tag": "div",
+                "cls": "settings-preview-wrapper",
+                "children": [
+                  {
+                    "tag": "span",
+                    "cls": "settings-preview-label",
+                    "text": "预览"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "settings-preview-frame"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "tag": "div",
+            "cls": "settings-content",
+            "children": [
+              {
+                "tag": "div",
+                "cls": "settings-header",
+                "children": [
+                  {
+                    "tag": "h2",
+                    "text": "录制设置"
+                  },
+                  {
+                    "tag": "button",
+                    "cls": "close-btn",
+                    "text": "×"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "画面比例"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "aspect-grid"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "背景"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "bg-category-tabs"
+                  },
+                  {
+                    "tag": "button",
+                    "cls": "random-bg-btn"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "gradient-grid"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "圆角半径: 16px"
+                  },
+                  {
+                    "tag": "input",
+                    "cls": "slider"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "slider-labels"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "摄像头"
+                  },
+                  {
+                    "tag": "label",
+                    "cls": "toggle-label"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "webcam-size-slider"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "webcam-shape-picker"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "画布边距: 80px"
+                  },
+                  {
+                    "tag": "input",
+                    "cls": "slider"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "slider-labels"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "settings-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "鼠标光标效果"
+                  },
+                  {
+                    "tag": "label",
+                    "cls": "toggle-label"
+                  },
+                  {
+                    "tag": "div",
+                    "cls": "cursor-colors"
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "cls": "account-section",
+                "children": [
+                  {
+                    "tag": "h3",
+                    "text": "账户"
+                  },
+                  {
+                    "tag": "button",
+                    "cls": "account-signin-integrated"
+                  },
+                  {
+                    "tag": "button",
+                    "cls": "account-signin-integrated.account-signin-email"
+                  },
+                  {
+                    "tag": "button",
+                    "cls": "upgrade-subtle-btn"
+                  }
+                ]
+              },
+              {
+                "tag": "button",
+                "cls": "done-btn",
+                "text": "完成"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "topToolbar": [
+    {
+      "testid": "dropdown-menu-button",
+      "label": "",
+      "title": "更多工具",
+      "text": "",
+      "shortcut": "",
+      "x": 955,
+      "y": 20
+    }
+  ],
+  "hamburgerMenu": [
+    {
+      "text": "打开Cmd+O",
+      "shortcut": "Cmd+O",
+      "testid": "load-button"
+    },
+    {
+      "text": "保存到...",
+      "shortcut": "",
+      "testid": "json-export-button"
+    },
+    {
+      "text": "导出图片...Cmd+Shift+E",
+      "shortcut": "Cmd+Shift+E",
+      "testid": "image-export-button"
+    },
+    {
+      "text": "Find on canvasCmd+F",
+      "shortcut": "Cmd+F",
+      "testid": "search-menu-button"
+    },
+    {
+      "text": "帮助?",
+      "shortcut": "?",
+      "testid": "help-menu-item"
+    },
+    {
+      "text": "重置画布",
+      "shortcut": "",
+      "testid": "clear-canvas-button"
+    },
+    {
+      "text": "GitHub",
+      "shortcut": "",
+      "testid": ""
+    },
+    {
+      "text": "Follow us",
+      "shortcut": "",
+      "testid": ""
+    },
+    {
+      "text": "Discord chat",
+      "shortcut": "",
+      "testid": ""
+    },
+    {
+      "text": "[SECTION] Excalidraw links",
+      "shortcut": "",
+      "testid": ""
+    }
+  ],
+  "moreTools": [
+    {
+      "text": "画框工具F",
+      "testid": "toolbar-frame",
+      "label": "",
+      "title": ""
+    },
+    {
+      "text": "嵌入网页",
+      "testid": "toolbar-embeddable",
+      "label": "",
+      "title": ""
+    },
+    {
+      "text": "激光笔K",
+      "testid": "toolbar-laser",
+      "label": "",
+      "title": ""
+    }
+  ],
+  "contextMenu": [
+    {
+      "text": "粘贴Cmd+V",
+      "shortcut": "Cmd+V"
+    },
+    {
+      "text": "粘贴",
+      "shortcut": ""
+    },
+    {
+      "text": "Cmd+V",
+      "shortcut": ""
+    },
+    {
+      "text": "全部选中Cmd+A",
+      "shortcut": "Cmd+A"
+    },
+    {
+      "text": "全部选中",
+      "shortcut": ""
+    },
+    {
+      "text": "Cmd+A",
+      "shortcut": ""
+    },
+    {
+      "text": "Toggle gridCmd+'",
+      "shortcut": "Cmd+'"
+    },
+    {
+      "text": "Toggle grid",
+      "shortcut": ""
+    },
+    {
+      "text": "Cmd+'",
+      "shortcut": ""
+    },
+    {
+      "text": "吸附至对象Option+S",
+      "shortcut": "Option+S"
+    },
+    {
+      "text": "吸附至对象",
+      "shortcut": ""
+    },
+    {
+      "text": "Option+S",
+      "shortcut": ""
+    },
+    {
+      "text": "禅模式Option+Z",
+      "shortcut": "Option+Z"
+    },
+    {
+      "text": "禅模式",
+      "shortcut": ""
+    },
+    {
+      "text": "Option+Z",
+      "shortcut": ""
+    },
+    {
+      "text": "查看模式Option+R",
+      "shortcut": "Option+R"
+    },
+    {
+      "text": "查看模式",
+      "shortcut": ""
+    },
+    {
+      "text": "Option+R",
+      "shortcut": ""
+    },
+    {
+      "text": "Canvas & Shape propertiesOption+/",
+      "shortcut": "Option+/"
+    },
+    {
+      "text": "Canvas & Shape properties",
+      "shortcut": ""
+    },
+    {
+      "text": "Option+/",
+      "shortcut": ""
+    }
+  ],
+  "helpPanel": {
+    "items": [
+      "抓手（平移工具）H",
+      "选择V或1",
+      "矩形R或2",
+      "菱形D或3",
+      "椭圆O或4",
+      "箭头A或5",
+      "线条L或6",
+      "自由书写P或7",
+      "文字T或8",
+      "插入图像9",
+      "橡皮E或0",
+      "画框工具F",
+      "激光笔K",
+      "从画布上取色I或ShiftS或ShiftG",
+      "编辑线条或箭头的点CmdEnter",
+      "添加或编辑文本Enter",
+      "添加新行(文本编辑器)Enter或ShiftEnter",
+      "完成编辑 (文本编辑器)Esc或CmdEnter",
+      "曲线箭头A单击单击单击",
+      "曲线L单击单击单击",
+      "Crop image双击或Enter",
+      "Finish image croppingEnter或Escape",
+      "绘制后保持所选的工具栏状态Q",
+      "禁用箭头吸附Cmd",
+      "为选中的形状添加/更新链接CmdK",
+      "放大Cmd+",
+      "缩小Cmd-",
+      "重置缩放Cmd0",
+      "缩放以适应所有元素Shift1",
+      "缩放到选区Shift2",
+      "上下移动页面PgUp/PgDn",
+      "左右移动页面ShiftPgUp/PgDn",
+      "禅模式OptionZ",
+      "吸附至对象OptionS",
+      "Toggle gridCmd'",
+      "查看模式OptionR",
+      "切换主题OptionShiftD",
+      "Canvas & Shape propertiesOption/",
+      "Find on canvasCmdF",
+      "Command paletteCmd/或CmdShiftP",
+      "Create a flowchart from a generic elementCmdArrow Key",
+      "Navigate a flowchartOptionArrow Key",
+      "移动画布Space拖动或Wheel拖动",
+      "重置画布CmdDelete",
+      "删除Delete",
+      "剪切CmdX",
+      "拷贝CmdC",
+      "粘贴CmdV",
+      "粘贴为纯文本CmdShiftV",
+      "全部选中CmdA",
+      "添加元素到选区Shift单击",
+      "深度选择Cmd单击",
+      "在方框内深度选择并避免拖拽Cmd拖动",
+      "复制为 PNG 到剪贴板ShiftOptionC",
+      "拷贝样式CmdOptionC",
+      "粘贴样式CmdOptionV",
+      "置于底层CmdOption[",
+      "置于顶层CmdOption]",
+      "下移一层Cmd[",
+      "上移一层Cmd]",
+      "顶部对齐CmdShiftUp",
+      "底端对齐CmdShiftDown",
+      "左对齐CmdShiftLeft",
+      "右对齐CmdShiftRight",
+      "复制CmdD或Option拖动",
+      "锁定/解锁CmdShiftL",
+      "撤销CmdZ",
+      "重做CmdShiftZ",
+      "编组CmdG",
+      "解除编组CmdShiftG",
+      "水平翻转ShiftH",
+      "垂直翻转ShiftV",
+      "显示描边颜色选择器S",
+      "显示背景颜色选择器G",
+      "Show font pickerShiftF",
+      "缩小字体大小CmdShift<",
+      "放大字体大小CmdShift>"
+    ],
+    "fullText": "帮助文档浏览我们的博客发现问题？提交反馈YouTube快捷键列表工具抓手（平移工具）H选择V或1矩形R或2菱形D或3椭圆O或4箭头A或5线条L或6自由书写P或7文字T或8插入图像9橡皮E或0画框工具F激光笔K从画布上取色I或ShiftS或ShiftG编辑线条或箭头的点CmdEnter添加或编辑文本Enter添加新行(文本编辑器)Enter或ShiftEnter完成编辑 (文本编辑器)Esc或CmdEnter曲线箭头A单击单击单击曲线L单击单击单击Crop image双击或EnterFinish image croppingEnter或Escape绘制后保持所选的工具栏状态Q禁用箭头吸附Cmd为选中的形状添加/更新链接CmdK视图放大Cmd+缩小Cmd-重置缩放Cmd0缩放以适应所有元素Shift1缩放到选区Shift2上下移动页面PgUp/PgDn左右移动页面ShiftPgUp/PgDn禅模式OptionZ吸附至对象OptionSToggle gridCmd'查看模式OptionR切换主题OptionShiftDCanvas & Shape propertiesOption/Find on canvasCmdFCommand paletteCmd/或CmdShiftP编辑器Create a flowchart from a generic elementCmdArrow KeyNavigate a flowchartOptionArrow Key移动画布Space拖动或Wheel拖动重置画布CmdDelete删除Delete剪切CmdX拷贝CmdC粘贴CmdV粘贴为纯文本CmdShiftV全部选中CmdA添加元素到选区Shift单击深度选择Cmd单击在方框内深度选择并避免拖拽Cmd拖动复制为 PNG 到剪贴板ShiftOptionC拷贝样式CmdOptionC粘贴样式CmdOptionV置于底层CmdOption[置于顶层CmdOption]下移一层Cmd[上移一层Cmd]顶部对齐CmdShiftUp底端对齐CmdShiftDown左对齐CmdShiftLeft右对齐CmdShiftRight复制CmdD或Option拖动锁定/解锁CmdShiftL撤销CmdZ重做CmdShiftZ编组CmdG解除编组CmdShiftG水平翻转ShiftH垂直翻转ShiftV显示描边颜色选择器S显示背景颜色选择器GShow font pickerShiftF缩小字体大小CmdShift<放大字体大小CmdShift>"
+  },
+  "bottomBar": [
+    {
+      "label": "缩小",
+      "title": "缩小 — Cmd+-",
+      "text": ""
+    },
+    {
+      "label": "重置缩放",
+      "title": "重置缩放",
+      "text": "100%"
+    },
+    {
+      "label": "放大",
+      "title": "放大 — Cmd++",
+      "text": ""
+    },
+    {
+      "label": "撤销",
+      "title": "",
+      "text": ""
+    },
+    {
+      "label": "重做",
+      "title": "",
+      "text": ""
+    },
+    {
+      "label": "帮助",
+      "title": "帮助 — ?",
+      "text": ""
+    },
+    {
+      "label": "",
+      "title": "",
+      "text": "退出禅模式"
+    }
+  ],
+  "teleprompter": {
+    "controls": [],
+    "fullText": ""
+  },
+  "propertiesPanel": {
+    "sections": [],
+    "allLabels": []
+  },
+  "slidePanel": {
+    "buttons": [
+      {
+        "text": "",
+        "title": "添加幻灯片",
+        "cls": "slide-add-btn entry-point"
+      }
+    ],
+    "fullText": "幻灯片模式创建幻灯片进行分页演示。每张幻灯片是一个固定画框，只有画框内的内容会被录制。"
+  },
+  "buttonStates": [
+    {
+      "name": "Record",
+      "normal": {
+        "bg": "rgb(220, 38, 38)",
+        "color": "rgb(255, 255, 255)",
+        "border": "0px none rgb(255, 255, 255)",
+        "borderRadius": "10px",
+        "boxShadow": "rgba(220, 38, 38, 0.3) 0px 2px 8px 0px",
+        "padding": "10px 16px",
+        "fontSize": "13px",
+        "fontWeight": "600",
+        "transition": "0.15s",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "74.7188px",
+        "height": "38px"
+      }
+    },
+    {
+      "name": "Settings",
+      "normal": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(120, 113, 108)",
+        "border": "0px none rgb(120, 113, 108)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "padding": "8px",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "transition": "0.15s",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "34px",
+        "height": "34px"
+      }
+    },
+    {
+      "name": "Teleprompter",
+      "normal": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(120, 113, 108)",
+        "border": "0px none rgb(120, 113, 108)",
+        "borderRadius": "8px",
+        "boxShadow": "none",
+        "padding": "8px",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "transition": "0.15s",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "34px",
+        "height": "34px"
+      }
+    },
+    {
+      "name": "Hamburger",
+      "normal": {
+        "bg": "rgb(236, 236, 244)",
+        "color": "rgb(27, 27, 31)",
+        "border": "0px none rgb(27, 27, 31)",
+        "borderRadius": "8px",
+        "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px",
+        "padding": "10px",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "transition": "transform 0.5s ease-in-out",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "36px",
+        "height": "36px"
+      }
+    },
+    {
+      "name": "Help",
+      "normal": {
+        "bg": "rgb(236, 236, 244)",
+        "color": "rgb(27, 27, 31)",
+        "border": "0px none rgb(27, 27, 31)",
+        "borderRadius": "8px",
+        "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px",
+        "padding": "10px",
+        "fontSize": "13.3333px",
+        "fontWeight": "400",
+        "transition": "all",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "36px",
+        "height": "36px"
+      }
+    },
+    {
+      "name": "AddSlide",
+      "normal": {
+        "bg": "rgba(0, 0, 0, 0)",
+        "color": "rgb(168, 162, 158)",
+        "border": "1px dashed rgb(168, 162, 158)",
+        "borderRadius": "10px",
+        "boxShadow": "none",
+        "padding": "0px",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "transition": "0.15s",
+        "cursor": "pointer",
+        "opacity": "1",
+        "width": "36px",
+        "height": "36px"
+      }
+    }
+  ],
+  "toolbarButtonStates": [
+    {
+      "testid": "dropdown-menu-button",
+      "isActive": false,
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(27, 27, 31)",
+      "border": "0px none rgb(27, 27, 31)",
+      "borderRadius": "8px"
+    }
+  ],
+  "animations": {
+    "transitions": [
+      "all",
+      "0.15s",
+      "transform 0.5s ease-in-out",
+      "box-shadow 0.5s ease-in-out",
+      "visibility linear, opacity 0.5s",
+      "transform 0.2s"
+    ],
+    "animations": [
+      "slide-strip-enter: 0.25s ease-out 1",
+      "popover-enter: 0.3s ease-out 1"
+    ],
+    "keyframes": [
+      {
+        "name": "rotate",
+        "cssText": "@keyframes rotate { \n  100% { transform: rotate(360deg); }\n}"
+      },
+      {
+        "name": "dash",
+        "cssText": "@keyframes dash { \n  0% { stroke-dasharray: 1, 300; stroke-dashoffset: 0; }\n  50% { stroke-dasharray: 150, 300; stroke-dashoffset: -200; }\n  100% { stroke-dasharray: 1, 300; stroke-dashoffset: -280; }"
+      },
+      {
+        "name": "Modal__background__fade-in",
+        "cssText": "@keyframes Modal__background__fade-in { \n  0% { opacity: 0; }\n  100% { opacity: 1; }\n}"
+      },
+      {
+        "name": "Modal__content_fade-in",
+        "cssText": "@keyframes Modal__content_fade-in { \n  0% { opacity: 0; transform: scale(0.9); }\n  100% { opacity: 1; transform: scale(1); }\n}"
+      },
+      {
+        "name": "library-unit__adder-animation",
+        "cssText": "@keyframes library-unit__adder-animation { \n  0% { transform: scale(0.85); }\n  50% { transform: scale(1); }\n  100% { transform: scale(0.85); }\n}"
+      },
+      {
+        "name": "library-unit__skeleton-opacity-animation",
+        "cssText": "@keyframes library-unit__skeleton-opacity-animation { \n  0% { opacity: 0; }\n  75% { opacity: 0; }\n  100% { opacity: 0.5; }\n}"
+      },
+      {
+        "name": "successStatusAnimation",
+        "cssText": "@keyframes successStatusAnimation { \n  0% { transform: scale(0.35); }\n  50% { transform: scale(1.25); }\n  100% { transform: scale(1); }\n}"
+      },
+      {
+        "name": "speaking-indicator-anim",
+        "cssText": "@keyframes speaking-indicator-anim { \n  0%, 100% { transform: scaleY(1); }\n  50% { transform: scaleY(2); }\n}"
+      },
+      {
+        "name": "warning-pulse",
+        "cssText": "@keyframes warning-pulse { \n  0% { opacity: 1; }\n  100% { opacity: 0.6; }\n}"
+      },
+      {
+        "name": "pulse",
+        "cssText": "@keyframes pulse { \n  0%, 100% { opacity: 1; transform: scale(1); }\n  50% { opacity: 0.5; transform: scale(0.9); }\n}"
+      },
+      {
+        "name": "checkPop",
+        "cssText": "@keyframes checkPop { \n  0% { transform: scale(0); }\n  100% { transform: scale(1); }\n}"
+      },
+      {
+        "name": "fadeIn",
+        "cssText": "@keyframes fadeIn { \n  0% { opacity: 0; }\n  100% { opacity: 1; }\n}"
+      },
+      {
+        "name": "slideUp",
+        "cssText": "@keyframes slideUp { \n  0% { opacity: 0; transform: translateY(20px) scale(0.98); }\n  100% { opacity: 1; transform: translateY(0px) scale(1); }\n}"
+      },
+      {
+        "name": "toast-slide-down",
+        "cssText": "@keyframes toast-slide-down { \n  0% { opacity: 0; transform: translate(-50%) translateY(-20px); }\n  100% { opacity: 1; transform: translate(-50%) translateY(0px); }\n}"
+      },
+      {
+        "name": "slide-strip-enter",
+        "cssText": "@keyframes slide-strip-enter { \n  0% { opacity: 0; transform: translateY(-50%) translate(12px); }\n  100% { opacity: 1; transform: translateY(-50%) translate(0px); }\n}"
+      },
+      {
+        "name": "popover-enter",
+        "cssText": "@keyframes popover-enter { \n  0% { opacity: 0; transform: translateY(-50%) translate(8px); }\n  100% { opacity: 1; transform: translateY(-50%) translate(0px); }\n}"
+      },
+      {
+        "name": "overlay-fade-in",
+        "cssText": "@keyframes overlay-fade-in { \n  0% { opacity: 0; }\n  100% { opacity: 1; }\n}"
+      },
+      {
+        "name": "modal-scale-in",
+        "cssText": "@keyframes modal-scale-in { \n  0% { opacity: 0; transform: scale(0.95) translateY(10px); }\n  100% { opacity: 1; transform: scale(1) translateY(0px); }\n}"
+      },
+      {
+        "name": "fade-in",
+        "cssText": "@keyframes fade-in { \n  0% { opacity: 0; }\n  100% { opacity: 1; }\n}"
+      },
+      {
+        "name": "spin",
+        "cssText": "@keyframes spin { \n  100% { transform: rotate(360deg); }\n}"
+      }
+    ]
+  },
+  "cssVariables": {
+    "--color-primary": "#3b82f6",
+    "--color-danger": "#ef4444",
+    "--color-dark": "#1a1a2e",
+    "--zIndex-canvas": "1",
+    "--zIndex-interactiveCanvas": "2",
+    "--zIndex-svgLayer": "3",
+    "--zIndex-wysiwyg": "3",
+    "--zIndex-canvasButtons": "3",
+    "--zIndex-layerUI": "4",
+    "--zIndex-eyeDropperBackdrop": "5",
+    "--zIndex-eyeDropperPreview": "6",
+    "--zIndex-hyperlinkContainer": "7",
+    "--zIndex-modal": "1000",
+    "--zIndex-popup": "1001",
+    "--zIndex-toast": "999999",
+    "--sab": "env(safe-area-inset-bottom)",
+    "--sal": "env(safe-area-inset-left)",
+    "--sar": "env(safe-area-inset-right)",
+    "--sat": "env(safe-area-inset-top)"
+  },
+  "elementStyles": [
+    {
+      "name": "body",
+      "fontFamily": "\"SF Pro Display\", -apple-system, \"system-ui\", \"Segoe UI\", Roboto, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "margin": "0px",
+      "border": "0px none rgb(0, 0, 0)",
+      "gap": "normal",
+      "width": "1440px",
+      "height": "900px"
+    },
+    {
+      "name": "excalidraw-root",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "1440px",
+      "height": "900px"
+    },
+    {
+      "name": "toolbar",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderRadius": "8px",
+      "boxShadow": "rgba(0, 0, 0, 0.17) 0px 0px 0.931014px 0px, rgba(0, 0, 0, 0.08) 0px 0px 3.12708px 0px, rgba(0, 0, 0,",
+      "padding": "4px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "550px",
+      "height": "44px"
+    },
+    {
+      "name": "island-panel",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderRadius": "8px",
+      "boxShadow": "rgba(0, 0, 0, 0.17) 0px 0px 0.931014px 0px, rgba(0, 0, 0, 0.08) 0px 0px 3.12708px 0px, rgba(0, 0, 0,",
+      "padding": "4px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "550px",
+      "height": "44px"
+    },
+    {
+      "name": "record-button",
+      "fontFamily": "\"DM Sans\", \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", -apple-system, sans",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "normal",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(220, 38, 38)",
+      "borderRadius": "10px",
+      "boxShadow": "rgba(220, 38, 38, 0.3) 0px 2px 8px 0px",
+      "padding": "10px 16px",
+      "margin": "0px",
+      "border": "0px none rgb(255, 255, 255)",
+      "gap": "6px",
+      "width": "74.7188px",
+      "height": "38px"
+    },
+    {
+      "name": "settings-icon",
+      "fontFamily": "Arial",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "color": "rgb(120, 113, 108)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "padding": "8px",
+      "margin": "0px",
+      "border": "0px none rgb(120, 113, 108)",
+      "gap": "normal",
+      "width": "34px",
+      "height": "34px"
+    },
+    {
+      "name": "teleprompter-icon",
+      "fontFamily": "Arial",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "color": "rgb(120, 113, 108)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "8px",
+      "boxShadow": "none",
+      "padding": "8px",
+      "margin": "0px",
+      "border": "0px none rgb(120, 113, 108)",
+      "gap": "normal",
+      "width": "34px",
+      "height": "34px"
+    },
+    {
+      "name": "hamburger",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgb(236, 236, 244)",
+      "borderRadius": "8px",
+      "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px",
+      "padding": "10px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "36px",
+      "height": "36px"
+    },
+    {
+      "name": "help-icon",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgb(236, 236, 244)",
+      "borderRadius": "8px",
+      "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px",
+      "padding": "10px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "36px",
+      "height": "36px"
+    },
+    {
+      "name": "add-slide",
+      "fontFamily": "\"DM Sans\", \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans SC\", -apple-system, sans",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "color": "rgb(168, 162, 158)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "margin": "0px",
+      "border": "1px dashed rgb(168, 162, 158)",
+      "gap": "normal",
+      "width": "36px",
+      "height": "36px"
+    },
+    {
+      "name": "footer",
+      "fontFamily": "Assistant, system-ui, \"system-ui\", -apple-system, \"Segoe UI\", Roboto, Helvetica,",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "color": "rgb(27, 27, 31)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "margin": "0px",
+      "border": "0px none rgb(27, 27, 31)",
+      "gap": "normal",
+      "width": "1440px",
+      "height": "36px"
+    },
+    {
+      "name": "control-group",
+      "error": "not found"
+    }
+  ],
+  "zIndexes": [
+    {
+      "zIndex": 2000,
+      "element": "div.recording-controls.",
+      "rect": {
+        "x": 1240,
+        "y": 20
+      }
+    },
+    {
+      "zIndex": 1000,
+      "element": "div.webcam-bubble.",
+      "rect": {
+        "x": 20,
+        "y": 100
+      }
+    },
+    {
+      "zIndex": 950,
+      "element": "div.slide-strip",
+      "rect": {
+        "x": 1370,
+        "y": 423
+      }
+    },
+    {
+      "zIndex": 100,
+      "element": "div.layer-ui__wrapper__footer-right.zen-mode-transition",
+      "rect": {
+        "x": 1388,
+        "y": 848
+      }
+    },
+    {
+      "zIndex": 5,
+      "element": "div.excalidraw-eye-dropper-container",
+      "rect": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "zIndex": 4,
+      "element": "div.layer-ui__wrapper",
+      "rect": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "zIndex": 3,
+      "element": "div.SVGLayer",
+      "rect": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "zIndex": 2,
+      "element": "canvas.excalidraw__canvas.interactive",
+      "rect": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "zIndex": 1,
+      "element": "canvas.excalidraw__canvas.static",
+      "rect": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "colorPalette": [
+    {
+      "color": "rgb(27, 27, 31)",
+      "count": 325
+    },
+    {
+      "color": "rgb(0, 0, 0)",
+      "count": 120
+    },
+    {
+      "color": "rgb(184, 184, 184)",
+      "count": 30
+    },
+    {
+      "color": "rgb(120, 113, 108)",
+      "count": 22
+    },
+    {
+      "color": "rgb(3, 0, 100)",
+      "count": 14
+    },
+    {
+      "color": "rgb(236, 236, 244)",
+      "count": 8
+    },
+    {
+      "color": "rgb(168, 162, 158)",
+      "count": 8
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "count": 6
+    },
+    {
+      "color": "rgb(250, 250, 249)",
+      "count": 5
+    },
+    {
+      "color": "rgba(16, 16, 16, 0.3)",
+      "count": 4
+    },
+    {
+      "color": "rgb(241, 240, 255)",
+      "count": 3
+    },
+    {
+      "color": "rgb(254, 252, 249)",
+      "count": 2
+    },
+    {
+      "color": "rgba(0, 0, 0, 0.06)",
+      "count": 2
+    },
+    {
+      "color": "rgb(214, 211, 209)",
+      "count": 2
+    },
+    {
+      "color": "rgb(245, 245, 244)",
+      "count": 1
+    },
+    {
+      "color": "rgb(220, 38, 38)",
+      "count": 1
+    },
+    {
+      "color": "rgb(224, 223, 255)",
+      "count": 1
+    },
+    {
+      "color": "rgb(41, 37, 36)",
+      "count": 1
+    },
+    {
+      "color": "rgba(0, 0, 0, 0) rgb(250, 250, 249) rgba(0, 0, 0, 0) rgb(41, 37, 36)",
+      "count": 1
+    }
+  ],
+  "recordingPreviewControls": [
+    {
+      "text": "",
+      "class": "icon-btn settings-btn",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(120, 113, 108)",
+      "borderRadius": "8px",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "padding": "8px",
+      "width": "34px",
+      "height": "34px"
+    },
+    {
+      "text": "",
+      "class": "icon-btn teleprompter-btn ",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(120, 113, 108)",
+      "borderRadius": "8px",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "padding": "8px",
+      "width": "34px",
+      "height": "34px"
+    },
+    {
+      "text": "✕ 取消",
+      "class": "control-button cancel-button",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(120, 113, 108)",
+      "borderRadius": "10px",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "padding": "10px 16px",
+      "width": "73.625px",
+      "height": "40px"
+    },
+    {
+      "text": "● 开始录制",
+      "class": "control-button confirm-button",
+      "bg": "rgb(21, 128, 61)",
+      "color": "rgb(255, 255, 255)",
+      "borderRadius": "10px",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "padding": "10px 16px",
+      "width": "100.984px",
+      "height": "38px"
+    },
+    {
+      "text": "",
+      "class": "dropdown-menu-button main-menu-trigger zen-mode-transition",
+      "bg": "rgb(236, 236, 244)",
+      "color": "rgb(27, 27, 31)",
+      "borderRadius": "8px",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "padding": "10px",
+      "width": "36px",
+      "height": "36px"
+    },
+    {
+      "text": "",
+      "class": "dropdown-menu-button App-toolbar__extra-tools-trigger zen-mode-transition",
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(27, 27, 31)",
+      "borderRadius": "8px",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "padding": "10px",
+      "width": "36px",
+      "height": "36px"
+    },
+    {
+      "text": "[FRAME BORDER]",
+      "borderColor": "rgb(22, 163, 74)",
+      "borderWidth": "2px",
+      "borderStyle": "solid"
+    },
+    {
+      "text": "[HINT] 可拖拽移动 · 拖拽角落缩放",
+      "bg": "rgba(28, 25, 23, 0.8)",
+      "color": "rgb(255, 255, 255)",
+      "borderRadius": "8px",
+      "fontSize": "13px"
+    }
+  ],
+  "settingsPanelDeep": [
+    {
+      "index": 0,
+      "title": "画面比例",
+      "controls": [
+        {
+          "type": "button",
+          "text": "16:9YouTube",
+          "class": "aspect-btn active",
+          "title": "",
+          "active": true,
+          "bg": "rgb(41, 37, 36)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        },
+        {
+          "type": "button",
+          "text": "4:3经典",
+          "class": "aspect-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        },
+        {
+          "type": "button",
+          "text": "3:4小红书",
+          "class": "aspect-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        },
+        {
+          "type": "button",
+          "text": "9:16抖音",
+          "class": "aspect-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        },
+        {
+          "type": "button",
+          "text": "1:1正方形",
+          "class": "aspect-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        },
+        {
+          "type": "button",
+          "text": "Custom自定义",
+          "class": "aspect-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(0, 0, 0)",
+          "width": "138px",
+          "height": "65px"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "背景",
+      "controls": [
+        {
+          "type": "button",
+          "text": "全部",
+          "class": "bg-category-tab active",
+          "title": "",
+          "active": true,
+          "bg": "rgb(41, 37, 36)",
+          "color": "rgb(255, 255, 255)",
+          "width": "50px",
+          "height": "31px"
+        },
+        {
+          "type": "button",
+          "text": "鲜艳",
+          "class": "bg-category-tab ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(120, 113, 108)",
+          "width": "50px",
+          "height": "31px"
+        },
+        {
+          "type": "button",
+          "text": "柔和",
+          "class": "bg-category-tab ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(120, 113, 108)",
+          "width": "50px",
+          "height": "31px"
+        },
+        {
+          "type": "button",
+          "text": "深色",
+          "class": "bg-category-tab ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(120, 113, 108)",
+          "width": "50px",
+          "height": "31px"
+        },
+        {
+          "type": "button",
+          "text": "自然",
+          "class": "bg-category-tab ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(255, 255, 255)",
+          "color": "rgb(120, 113, 108)",
+          "width": "50px",
+          "height": "31px"
+        },
+        {
+          "type": "button",
+          "text": "✨ 随机选择壁纸",
+          "class": "random-bg-btn",
+          "title": "",
+          "active": false,
+          "bg": "rgb(250, 250, 249)",
+          "color": "rgb(68, 64, 60)",
+          "width": "430px",
+          "height": "47px"
+        },
+        {
+          "type": "button",
+          "text": "",
+          "class": "gradient-btn active",
+          "title": "Cotton Candy",
+          "active": true,
+          "bg": "rgb(239, 239, 239)",
+          "color": "rgb(0, 0, 0)",
+          "width": "93px",
+          "height": "93px"
+        },
+        {
+          "type": "button",
+          "text": "",
+          "class": "gradient-btn ",
+          "title": "Morning Mist",
+          "active": false,
+          "bg": "rgb(239, 239, 239)",
+          "color": "rgb(0, 0, 0)",
+          "width": "93px",
+          "height": "93px"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "title": "圆角半径: 16px",
+      "controls": [
+        {
+          "type": "input-range",
+          "name": "",
+          "value": "16",
+          "min": "0",
+          "max": "40",
+          "step": "",
+          "placeholder": "",
+          "checked": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "title": "摄像头",
+      "controls": [
+        {
+          "type": "toggle",
+          "class": "toggle-label",
+          "checked": false,
+          "label": "录制时显示摄像头画面"
+        },
+        {
+          "type": "input-checkbox",
+          "name": "",
+          "value": "on",
+          "min": "",
+          "max": "",
+          "step": "",
+          "placeholder": "",
+          "checked": true
+        },
+        {
+          "type": "toggle",
+          "class": "toggle-switch",
+          "checked": false,
+          "label": "录制时显示摄像头画面"
+        },
+        {
+          "type": "input-range",
+          "name": "",
+          "value": "180",
+          "min": "100",
+          "max": "300",
+          "step": "",
+          "placeholder": "",
+          "checked": false
+        },
+        {
+          "type": "button",
+          "text": "圆形",
+          "class": "shape-option active",
+          "title": "圆形",
+          "active": true,
+          "bg": "rgb(41, 37, 36)",
+          "color": "rgb(254, 252, 249)",
+          "width": "211px",
+          "height": "38px"
+        },
+        {
+          "type": "button",
+          "text": "方形",
+          "class": "shape-option ",
+          "title": "方形",
+          "active": false,
+          "bg": "rgb(250, 250, 249)",
+          "color": "rgb(120, 113, 108)",
+          "width": "211px",
+          "height": "38px"
+        },
+        {
+          "type": "label",
+          "text": "麦克风"
+        },
+        {
+          "type": "select",
+          "options": [
+            "默认 - MacBook Air麦克风 (Built-in)",
+            "MacBook Air麦克风 (Built-in)",
+            "DoubaoAudioDevice (Virtual)"
+          ]
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "title": "画布边距: 80px",
+      "controls": [
+        {
+          "type": "input-range",
+          "name": "",
+          "value": "80",
+          "min": "0",
+          "max": "120",
+          "step": "",
+          "placeholder": "",
+          "checked": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "title": "鼠标光标效果",
+      "controls": [
+        {
+          "type": "toggle",
+          "class": "toggle-label",
+          "checked": false,
+          "label": "录制时显示光标高亮"
+        },
+        {
+          "type": "input-checkbox",
+          "name": "",
+          "value": "on",
+          "min": "",
+          "max": "",
+          "step": "",
+          "placeholder": "",
+          "checked": true
+        },
+        {
+          "type": "toggle",
+          "class": "toggle-switch",
+          "checked": false,
+          "label": "录制时显示光标高亮"
+        },
+        {
+          "type": "button",
+          "text": "",
+          "class": "color-btn active",
+          "title": "",
+          "active": true,
+          "bg": "rgb(239, 68, 68)",
+          "color": "rgb(0, 0, 0)",
+          "width": "28px",
+          "height": "28px"
+        },
+        {
+          "type": "button",
+          "text": "",
+          "class": "color-btn ",
+          "title": "",
+          "active": false,
+          "bg": "rgb(249, 115, 22)",
+          "color": "rgb(0, 0, 0)",
+          "width": "28px",
+          "height": "28px"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "title": "Account",
+      "controls": [
+        {
+          "type": "text",
+          "text": "账户使用 Google 登录使用邮箱登录去除水印 — $20 一次性付款"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "title": "Footer",
+      "controls": [
+        {
+          "type": "button",
+          "text": "完成"
+        }
+      ]
+    }
+  ],
+  "topToolbarFix": [
+    {
+      "testid": "toolbar-lock",
+      "label": "绘制后保持所选的工具栏状态",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-hand",
+      "label": "抓手（平移工具） — H",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-selection",
+      "label": "选择",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-rectangle",
+      "label": "矩形",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-diamond",
+      "label": "菱形",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-ellipse",
+      "label": "椭圆",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-arrow",
+      "label": "箭头",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-line",
+      "label": "线条",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-freedraw",
+      "label": "自由书写",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-text",
+      "label": "文字",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-image",
+      "label": "插入图像",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "toolbar-eraser",
+      "label": "橡皮",
+      "title": "",
+      "shortcutKey": ""
+    },
+    {
+      "testid": "dropdown-menu-button",
+      "label": "",
+      "title": "更多工具",
+      "text": ""
+    }
+  ],
+  "propertiesPanelDeep": {
+    "sections": [],
+    "raw": ""
+  },
+  "recordingStates": {
+    "preview": {
+      "controls": [
+        {
+          "text": "",
+          "class": "icon-btn settings-btn",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(120, 113, 108)",
+          "border": "0px none rgb(120, 113, 108)",
+          "borderRadius": "8px",
+          "padding": "8px",
+          "fontSize": "13.3333px",
+          "fontWeight": "400"
+        },
+        {
+          "text": "",
+          "class": "icon-btn teleprompter-btn active",
+          "bg": "rgb(41, 37, 36)",
+          "color": "rgb(255, 255, 255)",
+          "border": "0px none rgb(255, 255, 255)",
+          "borderRadius": "8px",
+          "padding": "8px",
+          "fontSize": "13.3333px",
+          "fontWeight": "400"
+        },
+        {
+          "text": "✕ 取消",
+          "class": "control-button cancel-button",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(120, 113, 108)",
+          "border": "1px solid rgb(231, 229, 228)",
+          "borderRadius": "10px",
+          "padding": "10px 16px",
+          "fontSize": "13px",
+          "fontWeight": "600"
+        },
+        {
+          "text": "● 开始录制",
+          "class": "control-button confirm-button",
+          "bg": "rgb(21, 128, 61)",
+          "color": "rgb(255, 255, 255)",
+          "border": "0px none rgb(255, 255, 255)",
+          "borderRadius": "10px",
+          "padding": "10px 16px",
+          "fontSize": "13px",
+          "fontWeight": "600"
+        },
+        {
+          "text": "",
+          "class": "dropdown-menu-button App-toolbar__extra-tools-trigger zen-mo",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(27, 27, 31)",
+          "border": "0px none rgb(27, 27, 31)",
+          "borderRadius": "8px",
+          "padding": "10px",
+          "fontSize": "13.3333px",
+          "fontWeight": "400"
+        }
+      ],
+      "greenBorder": null,
+      "hint": {
+        "text": "可拖拽移动 · 拖拽角落缩放",
+        "class": "preview-hint",
+        "bg": "rgba(28, 25, 23, 0.8)",
+        "color": "rgb(255, 255, 255)",
+        "borderRadius": "8px"
+      }
+    },
+    "active": {
+      "controls": [
+        {
+          "text": "",
+          "class": "icon-btn settings-btn",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(120, 113, 108)",
+          "borderRadius": "8px"
+        },
+        {
+          "text": "",
+          "class": "icon-btn teleprompter-btn active",
+          "bg": "rgb(41, 37, 36)",
+          "color": "rgb(255, 255, 255)",
+          "borderRadius": "8px"
+        },
+        {
+          "text": "",
+          "class": "icon-btn cursor-toggle-btn active",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(239, 68, 68)",
+          "borderRadius": "8px"
+        },
+        {
+          "text": "⏸ 暂停",
+          "class": "control-button pause-button",
+          "bg": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "borderRadius": "10px"
+        },
+        {
+          "text": "■ 停止",
+          "class": "control-button stop-button stop-recording-btn",
+          "bg": "rgb(68, 64, 60)",
+          "color": "rgb(255, 255, 255)",
+          "borderRadius": "10px"
+        },
+        {
+          "text": "",
+          "class": "dropdown-menu-button App-toolbar__extra-tools-trigger zen-mo",
+          "bg": "rgba(0, 0, 0, 0)",
+          "color": "rgb(27, 27, 31)",
+          "borderRadius": "8px"
+        }
+      ],
+      "recIndicator": {
+        "text": "● REC",
+        "class": "recording-badge",
+        "bg": "rgb(220, 38, 38)",
+        "color": "rgb(255, 255, 255)",
+        "borderRadius": "6px",
+        "animation": "1.5s ease-in-out infinite pulse-badge"
+      },
+      "redBorder": {
+        "element": "icon-btn cursor-toggle-btn active",
+        "borderColor": "rgb(239, 68, 68)",
+        "borderWidth": "0px"
+      },
+      "timer": {
+        "text": "00:04",
+        "class": "",
+        "fontSize": "13px"
+      }
+    },
+    "paused": {
+      "controls": [
+        {
+          "text": "",
+          "class": "icon-btn settings-btn",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "",
+          "class": "icon-btn teleprompter-btn active",
+          "bg": "rgb(41, 37, 36)"
+        },
+        {
+          "text": "",
+          "class": "icon-btn cursor-toggle-btn active",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "▶ 继续",
+          "class": "control-button pause-button",
+          "bg": "rgb(217, 119, 6)"
+        },
+        {
+          "text": "■ 停止",
+          "class": "control-button stop-button stop-recording-btn",
+          "bg": "rgb(68, 64, 60)"
+        },
+        {
+          "text": "",
+          "class": "dropdown-menu-button App-toolbar__extra-tools-trigger zen-mo",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    }
+  },
+  "teleprompterFixed": {
+    "controls": [
+      {
+        "tag": "button",
+        "type": "submit",
+        "text": "×",
+        "placeholder": "",
+        "class": "teleprompter-close",
+        "min": "",
+        "max": "",
+        "value": ""
+      },
+      {
+        "tag": "button",
+        "type": "submit",
+        "text": "",
+        "placeholder": "",
+        "class": "scroll-toggle ",
+        "min": "",
+        "max": "",
+        "value": ""
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "text": "",
+        "placeholder": "",
+        "class": "teleprompter-slider",
+        "min": "0",
+        "max": "100",
+        "value": "50"
+      },
+      {
+        "tag": "input",
+        "type": "range",
+        "text": "",
+        "placeholder": "",
+        "class": "teleprompter-slider",
+        "min": "0",
+        "max": "1",
+        "value": "0.7"
+      },
+      {
+        "tag": "textarea",
+        "type": "textarea",
+        "text": "",
+        "placeholder": "在此粘贴你的脚本...\n\n此文本仅对你可见，不会出现在录制中。",
+        "class": "teleprompter-text",
+        "min": "",
+        "max": "",
+        "value": ""
+      }
+    ],
+    "text": "提词器×滚动速度透明度",
+    "className": "teleprompter  ",
+    "rect": {
+      "x": 1080,
+      "y": 80,
+      "w": 340,
+      "h": 400
+    }
+  },
+  "propertiesFixed": {
+    "labels": [],
+    "buttons": [],
+    "raw": ""
+  },
+  "cameraBubble": {
+    "error": "not found"
+  }
+}

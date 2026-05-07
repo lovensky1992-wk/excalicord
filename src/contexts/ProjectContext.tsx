@@ -47,13 +47,16 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setError(null)
     try {
       const { data: projectData, error: projectError } = await db.projects.get(id)
+      console.log("[ProjectContext] loadProject", id, "project:", projectData, "error:", projectError)
       if (projectError) throw projectError
       setProject(projectData)
 
       const { data: slidesData, error: slidesError } = await db.slides.list(id)
+      console.log("[ProjectContext] slides:", slidesData?.length, "error:", slidesError)
       if (slidesError) throw slidesError
       setSlides(slidesData)
     } catch (err) {
+      console.error("[ProjectContext] loadProject failed:", err)
       setError(err instanceof Error ? err.message : "Failed to load project")
     } finally {
       setIsLoading(false)
@@ -153,7 +156,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const deleteSlide = useCallback(async (id: string) => {
-    if (slides.length <= 1) return
     setError(null)
     try {
       const { error } = await db.slides.delete(id)

@@ -20,7 +20,7 @@ function buildUserFromAuthUser(authUser: { id: string; email?: string; user_meta
     email: authUser.email || "",
     fullName: authUser.user_metadata?.full_name as string | undefined || authUser.user_metadata?.name as string | undefined,
     avatarUrl: authUser.user_metadata?.avatar_url as string | undefined || authUser.user_metadata?.picture as string | undefined,
-    subscriptionTier: "free",
+    subscriptionTier: "pro",
     subscriptionStatus: "active",
   }
 }
@@ -38,28 +38,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    // Get initial session - use session directly without calling getUser()
-    const initAuth = async () => {
-      const { data: sessionData } = await supabase.auth.getSession()
-      if (sessionData.session?.user) {
-        setUser(buildUserFromAuthUser(sessionData.session.user))
-      }
-      setIsLoading(false)
-    }
-
-    initAuth()
-
-    // Listen for auth changes - only handle SIGNED_IN and SIGNED_OUT
-    // Don't call any auth API methods here, just use the session data
+    // Listen for auth changes — INITIAL_SESSION handles page refresh with token refresh
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth event:", event)
+      console.log("[Auth] event:", event, "user:", session?.user?.email)
 
-      if (event === "SIGNED_IN" && session?.user) {
-        setUser(buildUserFromAuthUser(session.user))
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        if (session?.user) {
+          setUser(buildUserFromAuthUser(session.user))
+        } else {
+          setUser(null)
+        }
+        setIsLoading(false)
       } else if (event === "SIGNED_OUT") {
         setUser(null)
+        setIsLoading(false)
       }
-      // Ignore TOKEN_REFRESHED, USER_UPDATED - these cause lock issues
     })
 
     return () => {

@@ -40,9 +40,15 @@ export function useMediaDevices(): UseMediaDevicesReturn {
   const cameraStreamRef = useRef<MediaStream | null>(null)
   const micStreamRef = useRef<MediaStream | null>(null)
 
-  // Agent能力：设备开关状态
-  const [isCameraEnabled, setIsCameraEnabled] = useState(true)
-  const [isMicEnabled, setIsMicEnabled] = useState(true)
+  // Agent能力：设备开关状态 — persisted to localStorage
+  const [isCameraEnabled, setIsCameraEnabled] = useState(() => {
+    const v = localStorage.getItem("excalicord_isCameraEnabled")
+    return v === null ? true : v === "true"
+  })
+  const [isMicEnabled, setIsMicEnabled] = useState(() => {
+    const v = localStorage.getItem("excalicord_isMicEnabled")
+    return v === null ? true : v === "true"
+  })
 
   const refreshDevices = useCallback(async () => {
     try {
@@ -172,6 +178,10 @@ export function useMediaDevices(): UseMediaDevicesReturn {
       await startMic()
     }
   }, [stopMic, startMic])
+
+  // Persist device toggle state
+  useEffect(() => { localStorage.setItem("excalicord_isCameraEnabled", String(isCameraEnabled)) }, [isCameraEnabled])
+  useEffect(() => { localStorage.setItem("excalicord_isMicEnabled", String(isMicEnabled)) }, [isMicEnabled])
 
   // Agent能力：toggleCamera - 摄像头开关状态机
   const toggleCamera = useCallback(async () => {
