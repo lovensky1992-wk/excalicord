@@ -42,10 +42,10 @@ export function CameraBubble({
   }, [stream, videoRef])
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.target === containerRef.current) {
-      setIsDragging(true)
-      dragOffset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y }
-    }
+    const target = e.target as HTMLElement
+    if (target.closest("[data-resize-handle]")) return
+    setIsDragging(true)
+    dragOffset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y }
   }, [pos])
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -129,6 +129,7 @@ export function CameraBubble({
       />
       {/* Resize handle */}
       <div
+        data-resize-handle="true"
         onMouseDown={(e) => {
           e.stopPropagation()
           setIsResizing(true)

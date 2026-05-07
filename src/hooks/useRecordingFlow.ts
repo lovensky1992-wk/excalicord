@@ -216,8 +216,7 @@ export function useRecordingFlow(): UseRecordingFlowReturn {
     if (blob) {
       console.log("[useRecordingFlow] Recording stopped, blob:", blob.size, "bytes, type:", blob.type)
 
-      // Auto-download the recording
-      const extension = blob.type === "video/mp4" ? "mp4" : "webm"
+      const extension = blob.type.includes("mp4") ? "mp4" : "webm"
       const a = document.createElement("a")
       a.href = URL.createObjectURL(blob)
       a.download = `recording-${Date.now()}.${extension}`
@@ -249,6 +248,7 @@ export function useRecordingFlow(): UseRecordingFlowReturn {
     duration,
     recordedBlob,
     startPreview,
+    startPreviewWithFrameDims,
     cancelPreview,
     startRecording,
     pauseRecording,

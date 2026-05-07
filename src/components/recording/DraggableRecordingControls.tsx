@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui"
+import { useTranslation } from "@/hooks/useTranslation"
 import type { RecordingState } from "@/types"
 
 interface DraggableRecordingControlsProps {
@@ -27,6 +28,7 @@ export function DraggableRecordingControls({
   onPause,
   onResume,
 }: DraggableRecordingControlsProps) {
+  const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
@@ -282,7 +284,7 @@ export function DraggableRecordingControls({
               >
                 <circle cx="12" cy="12" r="8" />
               </svg>
-              Record
+              {"● " + t("recording.record")}
             </>
           )}
         </Button>

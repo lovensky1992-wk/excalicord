@@ -26,7 +26,7 @@ import { useProject } from "@/contexts"
 
 const DEFAULT_FRAME_X = 100
 const DEFAULT_FRAME_Y = 100
-const DEFAULT_FRAME_OFFSET_X = 800
+const DEFAULT_FRAME_GAP = 100
 const DEFAULT_FRAME_WIDTH = 1920
 const DEFAULT_FRAME_HEIGHT = 1080
 
@@ -76,6 +76,7 @@ export interface UseSlidesReturn {
   // Actions
   goToSlide: (index: number) => void
   addSlide: () => Promise<number>
+  deleteSlide: (id: string) => Promise<void>
   setAspectRatio: (ratio: string) => void
   setCustomSize: (width: number, height: number) => void
   updateFramePosition: (index: number, position: { x: number; y: number }) => void
@@ -129,12 +130,14 @@ function createSlideFrameElements(
   framePositions: Record<number, { x: number; y: number }>,
   frameDimensions: Record<number, { width: number; height: number }>
 ): SlideFrameElement[] {
+  let nextX = DEFAULT_FRAME_X
   return slides.map((slide, index) => {
     const isActive = index === currentIndex
-    const stored = framePositions[index]
-    const x = stored ? stored.x : DEFAULT_FRAME_X + index * DEFAULT_FRAME_OFFSET_X
-    const y = stored ? stored.y : DEFAULT_FRAME_Y
     const dims = frameDimensions[index] || { width: DEFAULT_FRAME_WIDTH, height: DEFAULT_FRAME_HEIGHT }
+    const stored = framePositions[index]
+    const x = stored ? stored.x : nextX
+    const y = stored ? stored.y : DEFAULT_FRAME_Y
+    nextX = x + dims.width + DEFAULT_FRAME_GAP
     return createSlideFrameElement(index, isActive, x, y, dims.width, dims.height, slide.name || `第${index + 1}页`)
   })
 }
@@ -144,7 +147,7 @@ function createSlideFrameElements(
 // ============================================================================
 
 export function useSlides(): UseSlidesReturn {
-  const { project, slides, addSlide: addSlideToProject } = useProject()
+  const { project, slides, addSlide: addSlideToProject, deleteSlide: deleteSlideFromProject } = useProject()
 
   // Current slide index
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
@@ -156,10 +159,26 @@ export function useSlides(): UseSlidesReturn {
   // Frame dimensions (keyed by index)
   const frameDimensionsRef = useRef<Record<number, { width: number; height: number }>>({})
 
-  // Default frame size settings
-  const [aspectRatio, setAspectRatio] = useState("16:9")
-  const [customWidth, setCustomWidth] = useState(DEFAULT_FRAME_WIDTH)
-  const [customHeight, setCustomHeight] = useState(DEFAULT_FRAME_HEIGHT)
+  // Default frame size settings — persisted to localStorage
+  const [aspectRatio, setAspectRatioState] = useState(() => {
+    return localStorage.getItem("excalicord_aspectRatio") || "16:9"
+  })
+  const [customWidth, setCustomWidth] = useState(() => {
+    const v = localStorage.getItem("excalicord_customWidth")
+    return v ? parseInt(v) : DEFAULT_FRAME_WIDTH
+  })
+  const [customHeight, setCustomHeight] = useState(() => {
+    const v = localStorage.getItem("excalicord_customHeight")
+    return v ? parseInt(v) : DEFAULT_FRAME_HEIGHT
+  })
+
+  const setAspectRatio = useCallback((ratio: string) => {
+    setAspectRatioState(ratio)
+    localStorage.setItem("excalicord_aspectRatio", ratio)
+  }, [])
+
+  useEffect(() => { localStorage.setItem("excalicord_customWidth", String(customWidth)) }, [customWidth])
+  useEffect(() => { localStorage.setItem("excalicord_customHeight", String(customHeight)) }, [customHeight])
 
   // Current slide reference
   const currentSlide = slides[currentSlideIndex] || null
@@ -170,13 +189,16 @@ export function useSlides(): UseSlidesReturn {
   useEffect(() => {
     if (slides.length === 0) return
 
+    let nextX = DEFAULT_FRAME_X
     slides.forEach((_, index) => {
+      const dims = frameDimensionsRef.current[index] || { width: DEFAULT_FRAME_WIDTH, height: DEFAULT_FRAME_HEIGHT }
       if (!framePositionsRef.current[index]) {
         framePositionsRef.current[index] = {
-          x: DEFAULT_FRAME_X + index * DEFAULT_FRAME_OFFSET_X,
+          x: nextX,
           y: DEFAULT_FRAME_Y,
         }
       }
+      nextX = framePositionsRef.current[index].x + dims.width + DEFAULT_FRAME_GAP
     })
     setFramePositions({ ...framePositionsRef.current })
   }, [slides])
@@ -241,7 +263,6 @@ export function useSlides(): UseSlidesReturn {
    * Navigate to a specific slide by index
    */
   const goToSlide = useCallback((index: number) => {
-    console.log(`[useSlides] goToSlide: index=${index}`)
     setCurrentSlideIndex(index)
   }, [])
 
@@ -261,32 +282,62 @@ export function useSlides(): UseSlidesReturn {
   }, [addSlideToProject, customWidth, customHeight])
 
   /**
+   * Delete a slide by id and adjust current index
+   */
+  const deleteSlide = useCallback(async (id: string) => {
+    const deletedIndex = slides.findIndex(s => s.id === id)
+    await deleteSlideFromProject(id)
+
+    // Clean up frame positions/dimensions for deleted index and shift higher indices down
+    const newPositions: Record<number, { x: number; y: number }> = {}
+    const newDimensions: Record<number, { width: number; height: number }> = {}
+    for (const [key, val] of Object.entries(framePositionsRef.current)) {
+      const i = parseInt(key)
+      if (i < deletedIndex) newPositions[i] = val
+      else if (i > deletedIndex) newPositions[i - 1] = val
+    }
+    for (const [key, val] of Object.entries(frameDimensionsRef.current)) {
+      const i = parseInt(key)
+      if (i < deletedIndex) newDimensions[i] = val
+      else if (i > deletedIndex) newDimensions[i - 1] = val
+    }
+    framePositionsRef.current = newPositions
+    frameDimensionsRef.current = newDimensions
+    setFramePositions({ ...newPositions })
+
+    if (currentSlideIndex >= slides.length - 1) {
+      setCurrentSlideIndex(Math.max(0, slides.length - 2))
+    } else if (currentSlideIndex > deletedIndex) {
+      setCurrentSlideIndex(currentSlideIndex - 1)
+    }
+  }, [slides, currentSlideIndex, deleteSlideFromProject])
+
+  /**
    * Update aspect ratio and recalculate dimensions
    */
   const updateAspectRatio = useCallback((ratio: string) => {
     setAspectRatio(ratio)
-    // Update dimensions based on new aspect ratio
+    let newW = 0, newH = 0
     switch (ratio) {
-      case "16:9":
-        setCustomWidth(1920)
-        setCustomHeight(1080)
-        break
-      case "4:3":
-        setCustomWidth(1440)
-        setCustomHeight(1080)
-        break
-      case "1:1":
-        setCustomWidth(1080)
-        setCustomHeight(1080)
-        break
-      case "9:16":
-        setCustomWidth(1080)
-        setCustomHeight(1920)
-        break
-      default:
-        break
+      case "16:9": newW = 1920; newH = 1080; break
+      case "4:3": newW = 1440; newH = 1080; break
+      case "3:4": newW = 1080; newH = 1440; break
+      case "1:1": newW = 1080; newH = 1080; break
+      case "9:16": newW = 1080; newH = 1920; break
+      default: break
     }
-  }, [])
+    if (newW > 0 && newH > 0) {
+      setCustomWidth(newW)
+      setCustomHeight(newH)
+      slides.forEach((_, index) => {
+        frameDimensionsRef.current[index] = { width: newW, height: newH }
+      })
+      if (project?.id) {
+        localStorage.setItem(`frameDims_${project.id}`, JSON.stringify(frameDimensionsRef.current))
+      }
+      setFramePositions({ ...framePositionsRef.current })
+    }
+  }, [slides, project?.id])
 
   /**
    * Set custom width and height
@@ -339,6 +390,7 @@ export function useSlides(): UseSlidesReturn {
     // Actions
     goToSlide,
     addSlide,
+    deleteSlide,
     setAspectRatio: updateAspectRatio,
     setCustomSize,
     updateFramePosition,

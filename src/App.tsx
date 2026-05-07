@@ -1,19 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Header, MainLayout } from "@/components/layout"
-import { DraggableRecordingControls } from "@/components/recording/DraggableRecordingControls"
-import { RecordingPreview } from "@/components/recording/RecordingPreview"
-import { PreviewPlayer } from "@/components/recording/PreviewPlayer"
+import { MainLayout } from "@/components/layout"
+import { TopBar } from "@/components/layout/TopBar"
+import { SettingsModal } from "@/components/settings/SettingsModal"
+import { TeleprompterPanel } from "@/components/teleprompter/TeleprompterPanel"
 import { ExcalidrawCanvas, CameraBubble } from "@/components/canvas"
-import { RightPanel } from "@/components/layout/RightPanel"
-import { LanguageSelector, ThemeToggle } from "@/components/ui"
-import { useMediaDevices, useTranslation, useAvatar, useSlides, useRecordingFlow, useExport } from "@/hooks"
+import { useMediaDevices, useAvatar, useSlides, useRecordingFlow } from "@/hooks"
 import { useAuth } from "@/contexts"
 import { useProject } from "@/contexts"
-import { LoginPage, SignUpPage, DashboardPage, PricingPage, AuthCallbackPage } from "@/pages"
+import { LoginPage, SignUpPage, DashboardPage, AuthCallbackPage } from "@/pages"
 import { analytics } from "@/services/api/analytics"
-import { db } from "@/services/api/supabase"
 import { defaultBeautySettings, type BeautySettings } from "@/services/beauty/BeautyFilter"
-import type { BubbleShape } from "@/components/canvas/CameraBubbleSettings"
 
 /**
  * App - 应用根组件，协调整合层
@@ -51,11 +47,10 @@ function App() {
   // =========================================================================
   // Section 1: Contexts & Hooks (数据层)
   // =========================================================================
-  const { t } = useTranslation()
   const { user, isLoading: authLoading } = useAuth()
 
   // Project context - 数据持久化
-  const { project, slides, updateSlide, createProject, loadProject, updateProject } = useProject()
+  const { project, slides, updateSlide, createProject, loadProject } = useProject()
 
   // Slide management hook - 幻灯片/帧状态
   const {
@@ -64,6 +59,7 @@ function App() {
     frameDimensions,
     goToSlide,
     addSlide,
+    deleteSlide,
     aspectRatio,
     customWidth,
     customHeight,
@@ -74,81 +70,67 @@ function App() {
   // =========================================================================
   // Section 2: Page & Project State (页面状态)
   // =========================================================================
-  const [currentPage, setCurrentPage] = useState<Page>(user ? "editor" : "login")
-  const [showPricing, setShowPricing] = useState(false)
-  const [projectName, setProjectName] = useState("Untitled Project")
-
-  // Save state
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
-  const pendingProjectNameRef = useRef<string | null>(null)
+  const isLocalMode = !import.meta.env.VITE_SUPABASE_URL
+  const [currentPage, setCurrentPage] = useState<Page>(isLocalMode ? "editor" : (user ? "editor" : "login"))
+  const [, setProjectName] = useState("Untitled Project")
 
   // =========================================================================
   // Section 3: Auth & Navigation Effects (认证 & 导航)
   // =========================================================================
-  // Sync currentPage with user state when auth changes
-  // Auto-load last project if available
+  // Auto-load last project on mount
   useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        // Try to load the last opened project from localStorage
-        const lastProjectId = localStorage.getItem("lastProjectId")
-        if (lastProjectId) {
-          loadProject(lastProjectId).then(() => {
-            setCurrentPage("editor")
-          }).catch(() => {
-            // If loading fails, just go to editor with empty state
-            setCurrentPage("editor")
-          })
-        } else {
-          setCurrentPage("editor")
-        }
-      } else {
-        setCurrentPage("login")
+    if (authLoading) return
+    if (!user && !isLocalMode) {
+      setCurrentPage("login")
+      return
+    }
+    setCurrentPage("editor")
+    const lastProjectId = localStorage.getItem("lastProjectId")
+    const isValidUUID = lastProjectId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(lastProjectId)
+    if (!isValidUUID && lastProjectId) {
+      console.warn("[App] Clearing stale lastProjectId:", lastProjectId)
+      localStorage.removeItem("lastProjectId")
+      // Clear other legacy localStorage mock keys
+      ;["excalicord_projects", "excalicord_slides", "excalicord_exports", "excalicord_profile", "frameDims_migrated_v2"].forEach(k => localStorage.removeItem(k))
+    }
+    if (isValidUUID) {
+      loadProject(lastProjectId).then(() => {
+        console.log("[App] Project loaded:", lastProjectId)
+      }).catch((err) => {
+        console.error("[App] Failed to load project:", lastProjectId, err)
+        localStorage.removeItem("lastProjectId")
+      })
+    }
+  }, [user, authLoading, loadProject, isLocalMode])
+
+  // Default project/slides are pre-populated in main.tsx (before React renders)
+  // No useEffect needed here — avoids race conditions and infinite loops
+
+  // Auto-save debounce for slide content
+  const slideContentSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const pendingSlideContentRef = useRef<{ slideId: string; content: Record<string, unknown> } | null>(null)
+
+  const debouncedSaveSlideContent = useCallback((slideId: string, content: Record<string, unknown>) => {
+    pendingSlideContentRef.current = { slideId, content }
+    if (slideContentSaveTimeoutRef.current) clearTimeout(slideContentSaveTimeoutRef.current)
+    slideContentSaveTimeoutRef.current = setTimeout(() => {
+      const pending = pendingSlideContentRef.current
+      if (pending) {
+        updateSlide(pending.slideId, { content: pending.content })
+        pendingSlideContentRef.current = null
       }
-    }
-  }, [user, authLoading, loadProject])
+    }, 500) // 500ms debounce — save at most 2x/second
+  }, [updateSlide])
 
-  // Auto-save debounce refs
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  // Debounced save function for project name
-  const debouncedProjectNameSave = useCallback((name: string) => {
-    pendingProjectNameRef.current = name
-    if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current)
-    autoSaveTimeoutRef.current = setTimeout(async () => {
-      if (project && pendingProjectNameRef.current) {
-        setIsSaving(true)
-        await updateProject({ title: pendingProjectNameRef.current })
-        setLastSavedAt(new Date())
-        setIsSaving(false)
-        pendingProjectNameRef.current = null
-      }
-    }, 1000)
-  }, [project, updateProject])
-
-  // Manual save function
-  const handleManualSave = useCallback(async () => {
-    if (!project) return
-    setIsSaving(true)
-    // Save any pending project name
-    if (pendingProjectNameRef.current) {
-      await updateProject({ title: pendingProjectNameRef.current })
-      pendingProjectNameRef.current = null
-    } else {
-      // If no pending name, just update with current name
-      await updateProject({ title: projectName })
-    }
-    setLastSavedAt(new Date())
-    setIsSaving(false)
-  }, [project, projectName, updateProject])
-
-  // Handle project name change
-  const handleProjectNameChange = useCallback((name: string) => {
-    setProjectName(name)
-    if (project) {
-      debouncedProjectNameSave(name)
-    }
-  }, [project, debouncedProjectNameSave])
+  // Stable callback for Excalidraw onChange - avoids inline function recreating every render
+  const handleElementsChange = useCallback((elements: any[]) => {
+    const slide = slides[currentSlideIndex]
+    if (!slide) return
+    const contentElements = elements
+      .filter((el: any) => !el.id.startsWith("slide-frame-"))
+      .map((el: any) => ({ ...el, slideId: slide.id }))
+    debouncedSaveSlideContent(slide.id, { elements: contentElements })
+  }, [slides, currentSlideIndex, debouncedSaveSlideContent])
 
   // Sync projectName when project loads
   useEffect(() => {
@@ -156,22 +138,6 @@ function App() {
       setProjectName(project.title)
     }
   }, [project?.title])
-
-  // Projects list for the projects panel
-  const [projects, setProjects] = useState<Array<{ id: string; title: string; updatedAt: string }>>([])
-
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const { data, error } = await db.projects.list()
-        if (error) throw error
-        setProjects(data || [])
-      } catch (err) {
-        console.error("Failed to load projects:", err)
-      }
-    }
-    loadProjects()
-  }, [])
 
   // Note: currentSlideIndex, goToSlide, addSlide, aspectRatio, customWidth, customHeight
   // are now managed by useSlides hook with localStorage persistence
@@ -185,18 +151,14 @@ function App() {
     isCameraEnabled,
     isMicEnabled,
     toggleCamera,
-    toggleMic,
     startCamera,
-    stopCamera,
     startMic,
-    stopMic,
   } = useMediaDevices()
 
   // Recording flow state machine - 委托给 useRecordingFlow 管理
   const {
     state: recordingState,
     isPreviewing,
-    showPreview,
     duration,
     startPreviewWithFrameDims,
     cancelPreview,
@@ -207,75 +169,89 @@ function App() {
     setCameraBubbleState,
   } = useRecordingFlow()
 
-  // Export agent - 委托给 useExport 管理
-  const { exportAndDownload } = useExport()
+  // Export agent - 委托给 useExport 管理（不再使用 mp4 转换）
 
   // =========================================================================
   // Section 5: Beauty & Avatar Settings (美颜 & 虚拟形象)
   // =========================================================================
-  const [beautyEnabled, setBeautyEnabled] = useState(false)
-  const [beautySettings, setBeautySettingsState] = useState<BeautySettings>(defaultBeautySettings)
+  // Beauty settings (kept for recording pipeline, not exposed in new UI yet)
+  const [beautyEnabled] = useState(false)
+  const [beautySettings] = useState<BeautySettings>(defaultBeautySettings)
 
-  // AI Avatar state - 委托给 useAvatar 管理
-  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null)
+  // AI Avatar state (kept for recording pipeline, not exposed in new UI yet)
   const {
     isEnabled: avatarEnabled,
-    presets: avatarPresets,
-    isLoading: avatarLoading,
-    error: avatarError,
     outputStream: avatarStream,
-    toggle: toggleAvatar,
-    selectAndStart: selectAvatarAndStart,
-    selectAvatar,
-    setExpression,
-    setScale: setAvatarScale,
-    setPosition: setAvatarPosition,
-    start: startAvatar,
     stop: stopAvatar,
+    start: startAvatar,
   } = useAvatar()
-
-  // Avatar expression state
-  const [avatarExpression, setAvatarExpression] = useState<"neutral" | "happy" | "serious">("neutral")
-  // Avatar scale state
-  const [avatarScale, setAvatarScaleState] = useState(1.0)
 
   // =========================================================================
   // Section 6: UI State (UI 状态)
   // =========================================================================
-  // Note: cameraEnabled/micEnabled now come from useMediaDevices (isCameraEnabled/isMicEnabled)
 
-  // Preview state
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  // Settings modal
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
-  // Right panel visibility (default: visible for camera/mic controls)
-  const [rightPanelVisible, setRightPanelVisible] = useState(true)
+  // Teleprompter panel
+  const [teleprompterOpen, setTeleprompterOpen] = useState(false)
 
-  // Projects panel visibility (default: hidden)
-  const [projectsPanelVisible, setProjectsPanelVisible] = useState(false)
+  // Countdown state (3-2-1 before recording)
+  const [countdownValue, setCountdownValue] = useState<number | null>(null)
 
-  // Toggle right panel
-  const toggleRightPanel = useCallback(() => {
-    setRightPanelVisible((v) => !v)
-  }, [])
 
-  // Toggle projects panel
-  const toggleProjectsPanel = useCallback(() => {
-    setProjectsPanelVisible((v) => !v)
-  }, [])
+  // Settings state — persisted to localStorage
+  const [cameraSize, setCameraSize] = useState(() => {
+    const v = localStorage.getItem("excalicord_cameraSize")
+    return v ? parseInt(v) : 180
+  })
+  const [cameraShape, setCameraShape] = useState<"circle" | "square">(() => {
+    const v = localStorage.getItem("excalicord_cameraShape")
+    return v === "square" ? "square" : "circle"
+  })
+  const [canvasMargin, setCanvasMargin] = useState(() => {
+    const v = localStorage.getItem("excalicord_canvasMargin")
+    return v ? parseInt(v) : 80
+  })
+  const [borderRadius, setBorderRadius] = useState(() => {
+    const v = localStorage.getItem("excalicord_borderRadius")
+    return v ? parseInt(v) : 16
+  })
+  const [cursorHighlight, setCursorHighlight] = useState(() => {
+    return localStorage.getItem("excalicord_cursorHighlight") === "true"
+  })
+  const [cursorColor, setCursorColor] = useState(() => {
+    return localStorage.getItem("excalicord_cursorColor") || "#ef4444"
+  })
+  const [background, setBackground] = useState<string | null>(() => {
+    return localStorage.getItem("excalicord_background") || null
+  })
+
+  // Persist settings to localStorage
+  useEffect(() => { localStorage.setItem("excalicord_cameraSize", String(cameraSize)) }, [cameraSize])
+  useEffect(() => { localStorage.setItem("excalicord_cameraShape", cameraShape) }, [cameraShape])
+  useEffect(() => { localStorage.setItem("excalicord_canvasMargin", String(canvasMargin)) }, [canvasMargin])
+  useEffect(() => { localStorage.setItem("excalicord_borderRadius", String(borderRadius)) }, [borderRadius])
+  useEffect(() => { localStorage.setItem("excalicord_cursorHighlight", String(cursorHighlight)) }, [cursorHighlight])
+  useEffect(() => { localStorage.setItem("excalicord_cursorColor", cursorColor) }, [cursorColor])
+  useEffect(() => {
+    if (background) localStorage.setItem("excalicord_background", background)
+    else localStorage.removeItem("excalicord_background")
+  }, [background])
+
+  // Toast notification for post-recording
+  const [showSaveToast, setShowSaveToast] = useState(false)
+
+  // Track whether a recording has been completed (for "素材库" button)
+  const [hasRecordedVideo, setHasRecordedVideo] = useState(false)
 
   // =========================================================================
-  // Section 7: Camera Bubble Refs & Settings (摄像头气泡)
+  // Section 7: Camera Bubble Refs (摄像头气泡)
   // =========================================================================
   const cameraVideoRef = useRef<HTMLVideoElement>(null)
   const cameraStreamRef = useRef<MediaStream | null>(null)
-  const cameraBubblePosition = useRef({ x: 50, y: 50 })
+  const [cameraBubblePos, setCameraBubblePos] = useState({ x: 50, y: 50 })
   const cameraBubbleSize = useRef({ width: 120, height: 90 })
-
-  // Camera bubble settings state
-  const [cameraBubbleShape, setCameraBubbleShape] = useState<BubbleShape>("rounded-rect")
-  const [cameraBubbleBorderColor, setCameraBubbleBorderColor] = useState("#ffffff")
-  const [cameraBubbleBorderWidth, setCameraBubbleBorderWidth] = useState(3)
-  const [cameraBubbleBorderRadius, setCameraBubbleBorderRadius] = useState(16)
 
   // Keep cameraStreamRef in sync with cameraStream
   useEffect(() => {
@@ -294,23 +270,6 @@ function App() {
   useEffect(() => {
     if (!authLoading && user) {
       analytics.identify(user.id, { email: user.email })
-    }
-  }, [authLoading, user])
-
-  // Track if this is the initial mount
-  const isInitialMount = useRef(true)
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      // On initial mount, set page based on auth state
-      if (!authLoading) {
-        if (user) {
-          setCurrentPage("dashboard")
-        } else {
-          setCurrentPage("login")
-        }
-      }
     }
   }, [authLoading, user])
 
@@ -351,17 +310,26 @@ function App() {
     cancelPreview()
   }, [cancelPreview])
 
-  // Handle start recording from preview state
+  // Handle start recording from preview state — 3-2-1 countdown then record
   const handleStartRecording = useCallback(async () => {
     try {
+      for (let i = 3; i >= 1; i--) {
+        setCountdownValue(i)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+      setCountdownValue(null)
       await startRecording()
     } catch (err) {
+      setCountdownValue(null)
       console.error("Failed to start recording:", err)
     }
   }, [startRecording])
 
   // Handle record button click - enter preview state
   const handleRecord = useCallback(async () => {
+    // Focus on the first slide
+    goToSlide(0)
+
     // Start camera and mic if not already running
     let cameraStreamToUse = cameraStream
     let micStreamToUse = micStream
@@ -392,17 +360,25 @@ function App() {
     const streamForRecording = avatarEnabled && avatarStream ? avatarStream : cameraStreamToUse
 
     // Set up camera bubble state - default to bottom-right of preview area
-    // Position will be adjusted by RecordingPreview component
-    const defaultPos = { x: 50, y: 50 }
+    // Position camera bubble at bottom-right of the viewport (inside slide area)
+    const viewportW = window.innerWidth
+    const viewportH = window.innerHeight
+    const bubbleW = cameraBubbleSize.current.width
+    const bubbleH = cameraBubbleSize.current.height
+    const defaultPos = {
+      x: viewportW - bubbleW - 80,
+      y: viewportH - bubbleH - 80,
+    }
+    setCameraBubblePos(defaultPos)
 
     const cameraBubbleConfig = {
       stream: streamForRecording,
       position: defaultPos,
       size: cameraBubbleSize.current,
-      shape: cameraBubbleShape,
-      borderRadius: cameraBubbleBorderRadius,
-      borderColor: cameraBubbleBorderColor,
-      borderWidth: cameraBubbleBorderWidth,
+      shape: cameraShape === "circle" ? "circle" as const : "rounded-rect" as const,
+      borderRadius: borderRadius,
+      borderColor: "#ffffff",
+      borderWidth: 3,
     }
 
     // Agent能力：使用 startPreviewWithFrameDims，内部自动计算 1.1x 尺寸
@@ -419,10 +395,12 @@ function App() {
       avatarStream,
       projectId: project?.id,
     })
-  }, [cameraStream, micStream, startCamera, startMic, startPreviewWithFrameDims, frameDimensions, currentSlideIndex, customWidth, customHeight, avatarEnabled, avatarStream, beautyEnabled, beautySettings, cameraBubbleShape, cameraBubbleBorderColor, cameraBubbleBorderWidth, cameraBubbleBorderRadius, cameraBubbleSize, project])
+  }, [cameraStream, micStream, startCamera, startMic, startPreviewWithFrameDims, frameDimensions, currentSlideIndex, customWidth, customHeight, avatarEnabled, avatarStream, beautyEnabled, beautySettings, cameraShape, borderRadius, cameraBubbleSize, project, goToSlide])
 
   const handleStop = useCallback(async () => {
     await stopRecording()
+    setHasRecordedVideo(true)
+    setShowSaveToast(true)
   }, [stopRecording])
 
   // Handle pause recording
@@ -434,35 +412,6 @@ function App() {
   const handleResumeRecording = useCallback(() => {
     resumeRecording()
   }, [resumeRecording])
-
-  // =========================================================================
-  // Section 9: Preview & Export Handlers (预览 & 导出)
-  // =========================================================================
-  const handlePreviewDownload = useCallback(() => {
-    if (!previewUrl) return
-    // Trigger download via link click
-    const a = document.createElement("a")
-    a.href = previewUrl
-    a.download = `recording-${Date.now()}.webm`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-  }, [previewUrl])
-
-  const handlePreviewExport = useCallback(async () => {
-    if (!previewUrl) return
-
-    // Agent能力：委托给 ExportAgent 导出并下载
-    await exportAndDownload(previewUrl, 'mp4')
-    setPreviewUrl(null) // Close preview
-  }, [previewUrl, exportAndDownload])
-
-  const handlePreviewClose = useCallback(() => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-    }
-    setPreviewUrl(null)
-  }, [previewUrl])
 
   // =========================================================================
   // Section 10: Device Toggle Handlers (设备开关处理)
@@ -496,20 +445,14 @@ function App() {
     const newStream = cameraStreamRef.current
     setCameraBubbleState({
       stream: newStream,
-      position: cameraBubblePosition.current,
+      position: cameraBubblePos,
       size: cameraBubbleSize.current,
-      shape: cameraBubbleShape,
-      borderRadius: cameraBubbleBorderRadius,
-      borderColor: cameraBubbleBorderColor,
-      borderWidth: cameraBubbleBorderWidth,
+      shape: cameraShape === "circle" ? "circle" : "rounded-rect",
+      borderRadius: borderRadius,
+      borderColor: "#ffffff",
+      borderWidth: 3,
     })
-  }, [cameraStream, toggleCamera, avatarEnabled, stopAvatar, startCamera, startAvatar, setCameraBubbleState, cameraBubbleShape, cameraBubbleBorderColor, cameraBubbleBorderWidth, cameraBubbleBorderRadius, cameraBubblePosition, cameraBubbleSize])
-
-  // Toggle mic on/off (for control bar icon)
-  // Agent能力：直接委托给 MediaAgent
-  const handleToggleMic = useCallback(async () => {
-    await toggleMic()
-  }, [toggleMic])
+  }, [cameraStream, toggleCamera, avatarEnabled, stopAvatar, startCamera, startAvatar, setCameraBubbleState, cameraShape, borderRadius])
 
   // Initialize camera and mic on mount (default enabled)
   useEffect(() => {
@@ -519,12 +462,12 @@ function App() {
           const stream = await startCamera()
           setCameraBubbleState({
             stream: stream,
-            position: cameraBubblePosition.current,
+            position: cameraBubblePos,
             size: cameraBubbleSize.current,
-            shape: cameraBubbleShape,
-            borderRadius: cameraBubbleBorderRadius,
-            borderColor: cameraBubbleBorderColor,
-            borderWidth: cameraBubbleBorderWidth,
+            shape: cameraShape === "circle" ? "circle" : "rounded-rect",
+            borderRadius: borderRadius,
+            borderColor: "#ffffff",
+            borderWidth: 3,
           })
         } catch (err) {
           console.error("Failed to start camera on init:", err)
@@ -539,42 +482,7 @@ function App() {
       }
     }
     initMedia()
-  }, [isCameraEnabled, isMicEnabled, cameraStream, startCamera, startMic, setCameraBubbleState, cameraBubblePosition, cameraBubbleSize, cameraBubbleShape, cameraBubbleBorderRadius, cameraBubbleBorderColor, cameraBubbleBorderWidth])
-
-  // =========================================================================
-  // Section 11: Avatar & Share Handlers (虚拟形象 & 分享)
-  // =========================================================================
-  // 虚拟形象切换、表情、位置控制
-
-  // Toggle AI Avatar on/off - 委托给 AvatarAgent
-  const handleAvatarToggle = useCallback(() => {
-    toggleAvatar(cameraStream)
-  }, [toggleAvatar, cameraStream])
-
-  // Select avatar preset - 委托给 AvatarAgent
-  const handleAvatarSelect = useCallback((presetId: string) => {
-    setSelectedAvatarId(presetId)
-    // Agent能力：如果 avatar 已启用，使用 selectAndStart
-    if (avatarEnabled && cameraStream) {
-      selectAvatarAndStart(presetId, cameraStream)
-    } else {
-      selectAvatar(presetId)
-    }
-  }, [avatarEnabled, cameraStream, selectAvatarAndStart, selectAvatar])
-
-  // Change avatar expression
-  const handleAvatarExpressionChange = useCallback((expression: "neutral" | "happy" | "serious") => {
-    setAvatarExpression(expression)
-    setExpression(expression)
-  }, [setExpression])
-
-  // Change avatar position
-  const handleAvatarPositionPreset = useCallback((position: { x: number; y: number }) => {
-    setAvatarPosition(position.x, position.y)
-  }, [setAvatarPosition])
-
-  const handleShare = useCallback(() => {
-    console.log("Share clicked")
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // =========================================================================
@@ -609,24 +517,13 @@ function App() {
     setCurrentPage("editor")
   }, [loadProject])
 
-  // Pricing handler
-  const handlePricing = useCallback(() => {
-    setShowPricing(true)
-  }, [])
-
-  const handleSelectPlan = useCallback(async (planId: string) => {
-    console.log("Selected plan:", planId)
-    // In production, this would initiate Stripe checkout
-    setShowPricing(false)
-  }, [])
-
   // Loading state
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="w-8 h-8 mx-auto mb-4 rounded-full bg-primary animate-pulse" />
-          <p className="text-muted-foreground">{t("common.loading") || "Loading..."}</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     )
@@ -639,7 +536,7 @@ function App() {
   }
 
   // Render pages
-  if (currentPage === "login" || (!user && currentPage !== "signup")) {
+  if (currentPage === "login" || (!user && !isLocalMode && currentPage !== "signup")) {
     return <LoginPage onSignUp={() => setCurrentPage("signup")} onSuccess={handleAuthSuccess} />
   }
 
@@ -658,308 +555,323 @@ function App() {
   }
 
   // Editor page
+  const isRecordingActive = recordingState === "recording" || recordingState === "paused"
+
   return (
     <>
       <MainLayout
-        header={
-          <Header
-            projectName={projectName}
-            onProjectNameChange={handleProjectNameChange}
-            onTogglePanel={toggleRightPanel}
-            onShare={handleShare}
-            onPricing={handlePricing}
-            onOpenProjectsPanel={toggleProjectsPanel}
-            panelVisible={rightPanelVisible}
-            languageSelector={<LanguageSelector />}
-            themeToggle={<ThemeToggle />}
-            onSignOut={handleSignOut}
-            onSave={handleManualSave}
-            lastSavedAt={lastSavedAt}
-            isSaving={isSaving}
-          />
-        }
+        header={null}
         canvas={
-          <div className="relative w-full h-full bg-canvas-light overflow-hidden">
-            {/* Single shared Excalidraw canvas */}
+          <div className="relative w-full h-full bg-[#f5f5f5] overflow-hidden">
+            {/* Excalidraw canvas */}
             <ExcalidrawCanvas
               key={slides[currentSlideIndex]?.id}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               elements={(slides[currentSlideIndex]?.content?.elements || []).map((el: any) => ({
                 ...el,
-                frameId: `slide-frame-${currentSlideIndex}`, // Set frameId for containment
+                frameId: `slide-frame-${currentSlideIndex}`,
               }))}
               slideFrameElements={frameElements}
-              onElementsChange={(elements) => {
-                const currentSlide = slides[currentSlideIndex]
-                if (!currentSlide) return
-
-                // Excalidraw handles frame containment natively
-                // Elements inside a frame move with the frame automatically
-                // Filter out frame elements and save content elements
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const contentElements = elements
-                  .filter((el: any) => !el.id.startsWith("slide-frame-"))
-                  .map((el: any) => ({
-                    ...el,
-                    slideId: currentSlide.id,
-                  }))
-                updateSlide(currentSlide.id, { content: { elements: contentElements } })
-              }}
-              onViewportChange={(scrollX, scrollY, zoom) => {
-                // Viewport tracking - currently not used but available for future features
-                console.debug(`Viewport: x=${scrollX}, y=${scrollY}, zoom=${zoom}`)
-              }}
+              onElementsChange={handleElementsChange}
+              onViewportChange={undefined}
               onSlideFrameClick={(frameIndex) => {
-                // frameIndex is the index from slide-frame-N
                 if (frameIndex >= 0 && frameIndex < slides.length) {
                   goToSlide(frameIndex)
                 }
               }}
               scrollToIndex={currentSlideIndex}
+              focusMode={isPreviewing || isRecordingActive}
             />
 
+            {/* Camera Bubble */}
             <CameraBubble
-              stream={isCameraEnabled && (recordingState === "idle" || recordingState === "previewing") ? (avatarEnabled && avatarStream ? avatarStream : cameraStream) : null}
-              position={cameraBubblePosition.current}
+              stream={isCameraEnabled && !isRecordingActive ? (avatarEnabled && avatarStream ? avatarStream : cameraStream) : null}
+              position={cameraBubblePos}
               size={cameraBubbleSize.current}
-              shape={cameraBubbleShape}
-              borderColor={cameraBubbleBorderColor}
-              borderWidth={cameraBubbleBorderWidth}
-              borderRadius={cameraBubbleBorderRadius}
+              shape={cameraShape === "circle" ? "circle" : "rounded-rect"}
+              borderColor="#ffffff"
+              borderWidth={3}
+              borderRadius={borderRadius}
               videoRef={cameraVideoRef}
             />
 
-            {/* Recording Preview Area - shown during recording */}
-            <RecordingPreview
-              visible={showPreview}
-              isPreview={isPreviewing}
-              width={Math.round((frameDimensions[currentSlideIndex]?.width || 1920) * 1.1)}
-              height={Math.round((frameDimensions[currentSlideIndex]?.height || 1080) * 1.1)}
-              cameraStream={cameraStream}
-              cameraPosition={cameraBubblePosition.current}
-              cameraSize={cameraBubbleSize.current}
-              cameraShape={cameraBubbleShape}
-              cameraBorderColor={cameraBubbleBorderColor}
-              cameraBorderWidth={cameraBubbleBorderWidth}
-              cameraBorderRadius={cameraBubbleBorderRadius}
-              onCameraPositionChange={(pos) => { cameraBubblePosition.current = pos }}
-              onCameraSizeChange={(size) => { cameraBubbleSize.current = size }}
-              videoRef={cameraVideoRef}
+            {/* Recording overlay border */}
+            {(isPreviewing || isRecordingActive) && (
+              <div className="absolute inset-0 z-20 pointer-events-none" style={{
+                border: isRecordingActive ? "3px dashed #ef4444" : "3px solid #22c55e",
+                borderRadius: 4,
+              }}>
+                {/* Resize handles — only during preview */}
+                {isPreviewing && (
+                  <>
+                    {[
+                      { top: -5, left: -5 },
+                      { top: -5, right: -5 },
+                      { bottom: -5, left: -5 },
+                      { bottom: -5, right: -5 },
+                    ].map((style, i) => (
+                      <div key={`corner-${i}`} className="absolute" style={{ ...style, width: 10, height: 10, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+                    ))}
+                    {[
+                      { top: -5, left: "50%", transform: "translateX(-50%)" },
+                      { bottom: -5, left: "50%", transform: "translateX(-50%)" },
+                      { top: "50%", left: -5, transform: "translateY(-50%)" },
+                      { top: "50%", right: -5, transform: "translateY(-50%)" },
+                    ].map((style, i) => (
+                      <div key={`mid-${i}`} className="absolute" style={{ ...style, width: 10, height: 10, borderRadius: "50%", backgroundColor: "#22c55e" }} />
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Slide mode hint during preview */}
+            {isPreviewing && !countdownValue && slides.length > 0 && (
+              <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+                <div className="bg-gray-800/80 text-white text-sm px-6 py-3 rounded-xl backdrop-blur-sm text-center whitespace-nowrap">
+                  幻灯片模式：录制时按 ←→ 键切换幻灯片
+                </div>
+              </div>
+            )}
+
+            {/* REC badge — top-left, matching original zh-26b */}
+            {isRecordingActive && (
+              <div className="absolute z-40" style={{ top: 55, left: 80 }}>
+                <div className="flex items-center gap-1.5" style={{
+                  backgroundColor: "#ef4444",
+                  color: "white",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  fontFamily: '"DM Sans", sans-serif',
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                }}>
+                  <span className="animate-pulse" style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "white", display: "inline-block" }} />
+                  REC
+                </div>
+              </div>
+            )}
+
+            {/* Countdown overlay: 3-2-1 */}
+            {countdownValue !== null && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+                <div style={{
+                  fontSize: 120,
+                  fontWeight: 700,
+                  fontFamily: '"DM Sans", sans-serif',
+                  color: "rgba(0,0,0,0.6)",
+                  lineHeight: 1,
+                  animation: "countdown-pop 1s ease-out",
+                }}>
+                  {countdownValue}
+                </div>
+              </div>
+            )}
+
+            {/* TopBar - right top controls */}
+            <TopBar
+              recordingState={recordingState}
+              duration={duration}
+              isPreviewing={isPreviewing}
+              onSettingsOpen={() => setSettingsOpen(true)}
+              onTeleprompterToggle={() => setTeleprompterOpen(v => !v)}
+              teleprompterOpen={teleprompterOpen}
+              onRecord={handleRecord}
+              onStartRecording={handleStartRecording}
+              onCancel={handleCancelRecording}
+              onPause={handlePauseRecording}
+              onResume={handleResumeRecording}
+              onStop={handleStop}
+              showMediaLibrary={hasRecordedVideo && !isRecordingActive && !isPreviewing}
             />
 
-            {/* Floating Slide Rail on right side, vertically centered */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-30">
-              <div className="flex flex-col items-center gap-1 py-2 bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border">
-                <div className="text-[10px] font-medium text-muted-foreground mb-1">幻灯片</div>
-                {slides.map((slide, index) => (
-                  <button
-                    key={slide.id}
-                    onClick={() => goToSlide(index)}
-                    className={`w-10 h-8 rounded border flex items-center justify-center transition-all ${
-                      currentSlideIndex === index
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
-                    }`}
-                    title={slide.name || `Slide ${index + 1}`}
-                  >
-                    <span className="text-xs font-medium">{index + 1}</span>
-                  </button>
-                ))}
+            {/* "素材库" button — appears after recording, top-right outside control group */}
+            {hasRecordedVideo && !isRecordingActive && !isPreviewing && (
+              <button
+                className="fixed z-40 flex items-center gap-1.5 transition-colors hover:text-gray-900"
+                style={{
+                  top: 28,
+                  right: 15,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  fontFamily: '"DM Sans", sans-serif',
+                  color: "rgb(68, 64, 60)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <line x1="3" x2="21" y1="9" y2="9" />
+                  <line x1="9" x2="9" y1="21" y2="9" />
+                </svg>
+                素材库
+              </button>
+            )}
+
+            {/* Teleprompter Panel */}
+            <TeleprompterPanel
+              open={teleprompterOpen}
+              onClose={() => setTeleprompterOpen(false)}
+            />
+
+            {/* Slide Panel - right side */}
+            {slides.length > 0 ? (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 z-30">
+                <div className="flex flex-col items-center gap-1.5 py-3 px-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200">
+                  <div className="text-[10px] font-medium text-gray-400 mb-0.5 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                      <line x1="3" x2="21" y1="9" y2="9" />
+                      <line x1="9" x2="9" y1="21" y2="9" />
+                    </svg>
+                    {isRecordingActive ? `${currentSlideIndex + 1} / ${slides.length}` : "幻灯片"}
+                  </div>
+                  {slides.map((slide, index) => (
+                    <div key={slide.id} className="relative group">
+                      <button
+                        onClick={() => goToSlide(index)}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all text-sm font-medium ${
+                          currentSlideIndex === index
+                            ? "bg-gray-900 text-white shadow-md"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        }`}
+                        title={slide.name || `Slide ${index + 1}`}
+                      >
+                        {index + 1}
+                      </button>
+                      {/* Delete button - hidden during recording */}
+                      {!isRecordingActive && !isPreviewing && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deleteSlide(slide.id)
+                          }}
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[8px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-600 z-10 leading-none shadow-sm"
+                          title="删除幻灯片"
+                        >
+                          &times;
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {/* Add slide button - hidden during recording */}
+                  {!isRecordingActive && !isPreviewing && (
+                    <button
+                      onClick={addSlide}
+                      className="w-10 h-10 rounded-lg border border-dashed border-gray-300 hover:border-gray-500 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                      title="添加幻灯片"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* No slides yet - show tooltip + add button matching original */
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 z-30 flex items-center gap-2">
+                <div style={{
+                  backgroundColor: "rgb(41, 37, 36)",
+                  color: "white",
+                  borderRadius: 12,
+                  padding: "16px 20px",
+                  maxWidth: 200,
+                  fontSize: 13,
+                  lineHeight: 1.5,
+                }}>
+                  <div style={{ fontWeight: 600, marginBottom: 6 }}>幻灯片模式</div>
+                  <div style={{ color: "rgb(168, 162, 158)", fontSize: 12 }}>
+                    创建幻灯片进行分页演示。每张幻灯片是一个固定画框，只有画框内的内容会被录制。
+                  </div>
+                </div>
                 <button
                   onClick={addSlide}
-                  className="w-10 h-8 rounded border border-dashed border-border hover:border-primary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center justify-center transition-colors hover:border-gray-500 hover:text-gray-600"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    border: "1px dashed rgb(168, 162, 158)",
+                    color: "rgb(168, 162, 158)",
+                    backgroundColor: "transparent",
+                    fontSize: 18,
+                  }}
                   title="添加幻灯片"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
+                  +
                 </button>
               </div>
-            </div>
-
-            {/* Draggable Recording Controls */}
-            <DraggableRecordingControls
-              state={recordingState}
-              duration={duration}
-              onRecord={isPreviewing ? handleStartRecording : handleRecord}
-              onStop={handleStop}
-              onCancel={isPreviewing ? handleCancelRecording : undefined}
-              onPause={recordingState === "recording" ? handlePauseRecording : undefined}
-              onResume={recordingState === "paused" ? handleResumeRecording : undefined}
-            />
+            )}
           </div>
-        }
-        rightPanel={
-          rightPanelVisible ? (
-            <RightPanel
-              beautyEnabled={beautyEnabled}
-              beautySettings={beautySettings}
-              onBeautySettingChange={(key, value) => setBeautySettingsState((prev) => ({ ...prev, [key]: value }))}
-              onBeautyToggle={() => setBeautyEnabled((v) => !v)}
-              onBeautyReset={() => setBeautySettingsState(defaultBeautySettings)}
-              cameraBubbleShape={cameraBubbleShape}
-              cameraBubbleBorderColor={cameraBubbleBorderColor}
-              cameraBubbleBorderWidth={cameraBubbleBorderWidth}
-              cameraBubbleBorderRadius={cameraBubbleBorderRadius}
-              cameraBubbleSize={cameraBubbleSize.current}
-              onCameraBubbleShapeChange={setCameraBubbleShape}
-              onCameraBubbleBorderColorChange={setCameraBubbleBorderColor}
-              onCameraBubbleBorderWidthChange={setCameraBubbleBorderWidth}
-              onCameraBubbleBorderRadiusChange={setCameraBubbleBorderRadius}
-              onCameraBubbleSizeChange={(size) => { cameraBubbleSize.current = size }}
-              onCameraBubblePositionPreset={(pos) => { cameraBubblePosition.current = pos }}
-              avatarEnabled={avatarEnabled}
-              avatarLoading={avatarLoading}
-              avatarError={avatarError}
-              avatarPresets={avatarPresets}
-              selectedAvatarId={selectedAvatarId}
-              avatarExpression={avatarExpression}
-              avatarScale={avatarScale}
-              onAvatarToggle={handleAvatarToggle}
-              onAvatarSelect={handleAvatarSelect}
-              onAvatarExpressionChange={handleAvatarExpressionChange}
-              onAvatarPositionPreset={handleAvatarPositionPreset}
-              onAvatarScaleChange={(scale) => {
-                setAvatarScaleState(scale)
-                setAvatarScale(scale)
-              }}
-              cameraEnabled={isCameraEnabled}
-              micEnabled={isMicEnabled}
-              onCameraToggle={handleToggleCamera}
-              onMicToggle={handleToggleMic}
-              aspectRatio={aspectRatio}
-              customWidth={customWidth}
-              customHeight={customHeight}
-              onAspectRatioChange={setAspectRatio}
-              onCustomSizeChange={setCustomSize}
-            />
-          ) : null
         }
       />
-      {showPricing && (
-        <PricingPage
-          onSelectPlan={handleSelectPlan}
-          onClose={() => setShowPricing(false)}
-        />
-      )}
-      {previewUrl && (
-        <PreviewPlayer
-          src={previewUrl}
-          onClose={handlePreviewClose}
-          onExport={handlePreviewExport}
-          onDownload={handlePreviewDownload}
-        />
-      )}
 
-      {/* Projects Panel Overlay */}
-      {projectsPanelVisible && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={() => setProjectsPanelVisible(false)}
-          />
-          <div className="fixed top-0 right-0 w-80 h-full bg-white border-l border-gray-200 shadow-xl z-50 overflow-y-auto">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">All Projects</h2>
-              <button
-                onClick={() => setProjectsPanelVisible(false)}
-                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-gray-500"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-4">
-              <button
-                onClick={() => {
-                  handleCreateProject()
-                  setProjectsPanelVisible(false)
-                }}
-                className="w-full mb-4 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                New Project
-              </button>
-              {projects.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-8">No projects yet</p>
-              ) : (
-                <div className="space-y-2">
-                  {projects.map((project) => (
-                    <button
-                      key={project.id}
-                      onClick={() => {
-                        handleOpenProject(project.id)
-                        setProjectsPanelVisible(false)
-                      }}
-                      className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shrink-0">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#9333EA"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                            <polyline points="14 2 14 8 20 8" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {project.title}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(project.updatedAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+      {/* Settings Modal */}
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        aspectRatio={aspectRatio}
+        onAspectRatioChange={(ratio, width, height) => {
+          setAspectRatio(ratio)
+          if (width > 0 && height > 0) setCustomSize(width, height)
+        }}
+        cameraEnabled={isCameraEnabled}
+        onCameraToggle={handleToggleCamera}
+        cameraSize={cameraSize}
+        onCameraSizeChange={setCameraSize}
+        cameraShape={cameraShape}
+        onCameraShapeChange={setCameraShape}
+        canvasMargin={canvasMargin}
+        onCanvasMarginChange={setCanvasMargin}
+        borderRadius={borderRadius}
+        onBorderRadiusChange={setBorderRadius}
+        cursorHighlight={cursorHighlight}
+        onCursorHighlightToggle={() => setCursorHighlight(v => !v)}
+        cursorColor={cursorColor}
+        onCursorColorChange={setCursorColor}
+        background={background}
+        onBackgroundChange={setBackground}
+      />
+
+      {/* Save toast — matches original zh-29-after-stop */}
+      {showSaveToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4" style={{
+          backgroundColor: "rgb(28, 25, 23)",
+          color: "white",
+          borderRadius: 16,
+          padding: "16px 20px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+          fontFamily: '"DM Sans", sans-serif',
+        }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>视频已保存（带水印）</div>
+            <div style={{ fontSize: 12, color: "rgb(168, 162, 158)", marginTop: 2 }}>仅需 $20 即可永久去除水印</div>
           </div>
-        </>
+          <button
+            className="transition-colors hover:bg-gray-100"
+            style={{
+              backgroundColor: "white",
+              color: "rgb(28, 25, 23)",
+              fontSize: 13,
+              fontWeight: 600,
+              padding: "8px 16px",
+              borderRadius: 10,
+              border: "none",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            升级
+          </button>
+          <button
+            onClick={() => setShowSaveToast(false)}
+            style={{ color: "rgb(168, 162, 158)", fontSize: 18, cursor: "pointer", background: "none", border: "none", padding: "0 4px" }}
+          >
+            ✕
+          </button>
+        </div>
       )}
     </>
   )

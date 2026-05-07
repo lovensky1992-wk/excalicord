@@ -183,6 +183,7 @@ export function Header({
         )}
 
         {/* Pricing icon */}
+        {onPricing && (
         <Button variant="ghost" size="icon" onClick={onPricing} title={t("header.pricing")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -199,8 +200,10 @@ export function Header({
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
           </svg>
         </Button>
+        )}
 
         {/* Share icon */}
+        {onShare && (
         <Button variant="ghost" size="icon" onClick={onShare} title={t("header.share")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -220,6 +223,7 @@ export function Header({
             <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
           </svg>
         </Button>
+        )}
 
         {/* Settings/Config icon to toggle right panel */}
         <Button
