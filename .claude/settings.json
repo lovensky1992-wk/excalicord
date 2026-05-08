@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(supabase/migrations/*)",
+      "Edit(.env*)",
+      "Edit(package-lock.json)"
+    ]
+  }
+}

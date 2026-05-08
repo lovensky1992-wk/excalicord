@@ -246,7 +246,88 @@
 - `tests/visual/regression.spec.ts` — 新增 paused + stop 回归测试（4 个）
 
 #### 待办（下一步）
-- [ ] Phase 7：最终验证 + 提交
+- [x] Phase 7：最终验证 + 提交 ✅
+
+---
+
+## 2026-05-08 会话 — Phase 7 最终验证 + 提交
+
+### Phase 7 完成 ✅
+
+#### 7.1 全流程回归测试
+- [x] 16 个回归测试全通过（47s）
+- [x] `tsc --noEmit` 零错误
+- [x] 无未使用 import，console 语句为原始代码（非调试残留）
+
+#### 7.1a 暗色主题验证
+- [x] 切换 dark mode 后 idle/settings/preview 三个状态不崩坏
+- [x] 3 个暗色主题 golden 快照已生成
+
+#### 7.1b 6 种比例切换验证
+- [x] 16:9 / 4:3 / 3:4 / 9:16 / 1:1 五种比例切换正常（Custom 不适合自动化）
+- [x] 5 个比例 golden 快照已生成
+- [x] 全部 8 个 Phase 7 验证测试通过（24s）
+
+#### 7.2 代码清理
+- [x] `tsc --noEmit` 无错误
+- [x] 检查修改文件无未使用 import
+- [x] console 语句全部来自原始代码，非调试残留，保留
+
+#### 7.3 提交（按功能分层 4 个 commit）
+
+| # | Commit | 内容 | 文件数 |
+|---|--------|------|--------|
+| 1 | `1c24580` | 基础设施 — Supabase Docker + Playwright + 环境 + 参考截图 | 103 |
+| 2 | `adbe393` | UI 像素级对齐 — Phase 1-6 全状态组件 | 71 |
+| 3 | `e017c2c` | 视觉回归测试 — 16 个 golden 快照 | 23 |
+| 4 | `4b8b48e` | 验证 — 暗色主题 + 5 种比例 + CLAUDE.md 更新 | 10 |
+
+- [x] 推送到 GitHub fork: https://github.com/lovensky1992-wk/excalicord
+  - Commit 1-3 推送成功
+  - Commit 4 推送因网络超时未完成，待手动 `git push mine main`
+- [x] CLAUDE.md 当前状态已更新
+
+#### 修改文件
+- `tests/visual/phase7-verify.spec.ts` — 暗色主题(3) + 比例切换(5) 验证测试
+- `CLAUDE.md` — 更新当前状态反映 Phase 0-7 完成
+
+#### 总测试覆盖
+- **回归测试**：16 个（idle×4, settings×1, preview×2, recording×3, paused×2, stop×2, teleprompter×1, slide×1）
+- **验证测试**：8 个（dark×3, ratio×5）
+- **合计**：24 个 Playwright 视觉测试全通过
+
+---
+
+## 项目完成总结
+
+### 执行时间线
+| 日期 | 会话 | 内容 |
+|------|------|------|
+| 05-07 | 会话 1 | Phase 0：Playwright 基础设施 |
+| 05-07 | 会话 2 | Phase 1：idle 状态对齐（diff 15.43% → 0.73%）|
+| 05-07 | 会话 3 | Phase 2：设置面板对齐 |
+| 05-08 | 会话 4 | Phase 3：preview 状态对齐 |
+| 05-08 | 会话 5 | Phase 4：recording 状态对齐 |
+| 05-08 | 会话 6 | Phase 5：paused + stop 状态对齐 |
+| 05-08 | 会话 7 | Phase 6：辅助功能对齐 + Phase 7：最终验证提交 |
+
+### 关键成果
+- **像素级 UI 对齐**：6 个状态（idle/settings/preview/recording/paused/stop）+ 4 个辅助功能
+- **自动化验证**：24 个 Playwright 视觉回归测试覆盖全状态
+- **零 TypeScript 错误**：tsc --noEmit 通过
+- **4 个分层 commit**：基础设施 → UI 对齐 → 回归测试 → 验证
+
+### 架构决策回顾
+| 决策 | 结果 |
+|------|------|
+| D1 本地 Supabase Docker | ✅ 零代码改动，功能对等 |
+| D2 保留 MediaRecorder | ✅ 录制功能正常 |
+| D3 HTML overlay 录制边框 | ✅ 绕过 Excalidraw 0.18 限制 |
+| D4 Playwright snapshot 视觉回归 | ✅ 24 个测试稳定通过 |
+| D5 逐屏推进 | ✅ 7 个 Phase 依次完成 |
+| D6 在半成品上继续 | ✅ 避免重建，保留正确架构 |
+| D7 双层验证 | ✅ 双源 diff + golden 回归 |
+| D8 viewport 1440×900 / DPR 1 | ✅ 与原站截图参数一致 |
 
 ---
 
@@ -288,4 +369,85 @@
 - `tests/visual/regression.spec.ts` — 新增 teleprompter + slide panel 回归测试（2 个）
 
 #### 待办（下一步）
-- [ ] Phase 7：最终验证 + 提交
+- [x] Phase 7：最终验证 + 提交 ✅
+
+---
+
+## 2026-05-08 会话 — Phase 7 最终验证 + 提交
+
+### Phase 7 完成 ✅
+
+#### 7.1 全流程回归测试
+- [x] 16 个回归测试全通过（47s）
+- [x] `tsc --noEmit` 零错误
+- [x] 无未使用 import，console 语句为原始代码（非调试残留）
+
+#### 7.1a 暗色主题验证
+- [x] 切换 dark mode 后 idle/settings/preview 三个状态不崩坏
+- [x] 3 个暗色主题 golden 快照已生成
+
+#### 7.1b 6 种比例切换验证
+- [x] 16:9 / 4:3 / 3:4 / 9:16 / 1:1 五种比例切换正常（Custom 不适合自动化）
+- [x] 5 个比例 golden 快照已生成
+- [x] 全部 8 个 Phase 7 验证测试通过（24s）
+
+#### 7.2 代码清理
+- [x] `tsc --noEmit` 无错误
+- [x] 检查修改文件无未使用 import
+- [x] console 语句全部来自原始代码，非调试残留，保留
+
+#### 7.3 提交（按功能分层 4 个 commit）
+
+| # | Commit | 内容 | 文件数 |
+|---|--------|------|--------|
+| 1 | `1c24580` | 基础设施 — Supabase Docker + Playwright + 环境 + 参考截图 | 103 |
+| 2 | `adbe393` | UI 像素级对齐 — Phase 1-6 全状态组件 | 71 |
+| 3 | `e017c2c` | 视觉回归测试 — 16 个 golden 快照 | 23 |
+| 4 | `4b8b48e` | 验证 — 暗色主题 + 5 种比例 + CLAUDE.md 更新 | 10 |
+
+- [x] 推送到 GitHub fork: https://github.com/lovensky1992-wk/excalicord
+  - Commit 1-3 推送成功
+  - Commit 4 推送因网络超时未完成，待手动 `git push mine main`
+- [x] CLAUDE.md 当前状态已更新
+
+#### 修改文件
+- `tests/visual/phase7-verify.spec.ts` — 暗色主题(3) + 比例切换(5) 验证测试
+- `CLAUDE.md` — 更新当前状态反映 Phase 0-7 完成
+
+#### 总测试覆盖
+- **回归测试**：16 个（idle×4, settings×1, preview×2, recording×3, paused×2, stop×2, teleprompter×1, slide×1）
+- **验证测试**：8 个（dark×3, ratio×5）
+- **合计**：24 个 Playwright 视觉测试全通过
+
+---
+
+## 项目完成总结
+
+### 执行时间线
+| 日期 | 会话 | 内容 |
+|------|------|------|
+| 05-07 | 会话 1 | Phase 0：Playwright 基础设施 |
+| 05-07 | 会话 2 | Phase 1：idle 状态对齐（diff 15.43% → 0.73%）|
+| 05-07 | 会话 3 | Phase 2：设置面板对齐 |
+| 05-08 | 会话 4 | Phase 3：preview 状态对齐 |
+| 05-08 | 会话 5 | Phase 4：recording 状态对齐 |
+| 05-08 | 会话 6 | Phase 5：paused + stop 状态对齐 |
+| 05-08 | 会话 7 | Phase 6：辅助功能对齐 + Phase 7：最终验证提交 |
+
+### 关键成果
+- **像素级 UI 对齐**：6 个状态（idle/settings/preview/recording/paused/stop）+ 4 个辅助功能
+- **自动化验证**：24 个 Playwright 视觉回归测试覆盖全状态
+- **零 TypeScript 错误**：tsc --noEmit 通过
+- **4 个分层 commit**：基础设施 → UI 对齐 → 回归测试 → 验证
+
+### 架构决策回顾
+| 决策 | 结果 |
+|------|------|
+| D1 本地 Supabase Docker | ✅ 零代码改动，功能对等 |
+| D2 保留 MediaRecorder | ✅ 录制功能正常 |
+| D3 HTML overlay 录制边框 | ✅ 绕过 Excalidraw 0.18 限制 |
+| D4 Playwright snapshot 视觉回归 | ✅ 24 个测试稳定通过 |
+| D5 逐屏推进 | ✅ 7 个 Phase 依次完成 |
+| D6 在半成品上继续 | ✅ 避免重建，保留正确架构 |
+| D7 双层验证 | ✅ 双源 diff + golden 回归 |
+| D8 viewport 1440×900 / DPR 1 | ✅ 与原站截图参数一致 |
