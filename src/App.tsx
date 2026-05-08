@@ -100,8 +100,15 @@ function App() {
         console.error("[App] Failed to load project:", lastProjectId, err)
         localStorage.removeItem("lastProjectId")
       })
+    } else {
+      createProject("Untitled Project").then((p) => {
+        if (p) {
+          localStorage.setItem("lastProjectId", p.id)
+          console.log("[App] Auto-created default project:", p.id)
+        }
+      })
     }
-  }, [user, authLoading, loadProject, isLocalMode])
+  }, [user, authLoading, loadProject, createProject, isLocalMode])
 
   // Default project/slides are pre-populated in main.tsx (before React renders)
   // No useEffect needed here — avoids race conditions and infinite loops

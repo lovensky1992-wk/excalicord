@@ -276,10 +276,13 @@ export function useSlides(): UseSlidesReturn {
         width: customWidth,
         height: customHeight,
       }
+      if (project?.id) {
+        localStorage.setItem(`frameDims_${project.id}`, JSON.stringify(frameDimensionsRef.current))
+      }
       setCurrentSlideIndex(newIndex)
     }
     return newIndex
-  }, [addSlideToProject, customWidth, customHeight])
+  }, [addSlideToProject, customWidth, customHeight, project?.id])
 
   /**
    * Delete a slide by id and adjust current index
